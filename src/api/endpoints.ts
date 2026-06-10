@@ -36,6 +36,17 @@ export const categoriesApi = {
     apiClient.get<Category>(`/categories/${slug}`),
 };
 
+export interface SiteSettings {
+  maintenanceMode: boolean;
+  maintenanceMessage: string;
+}
+
+export const settingsApi = {
+  getPublic: () => apiClient.get<SiteSettings>('/settings/public'),
+  get: () => apiClient.get<SiteSettings>('/settings'),
+  update: (data: Partial<SiteSettings>) => apiClient.put<SiteSettings>('/settings', data),
+};
+
 export const authApi = {
   login: (email: string, password: string) =>
     apiClient.post('/auth/login', { email, password }),

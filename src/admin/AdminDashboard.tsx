@@ -1,9 +1,110 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useAdminAuth } from './AdminAuth';
+import { settingsApi } from '../api/endpoints';
 
 interface Stats { articles: number; published: number; categories: number; users: number; }
+
+function MaintenanceCard() {
+  const [enabled, setEnabled] = useState(false);
+  const [message, setMessage] = useState('');
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    settingsApi.get()
+      .then(res => {
+        setEnabled(!!res.data?.maintenanceMode);
+        setMessage(res.data?.maintenanceMessage ?? '');
+      })
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, []);
+
+  const toggle = async () => {
+    const next = !enabled;
+    setSaving(true);
+    try {
+      const res = await settingsApi.update({ maintenanceMode: next, maintenanceMessage: message });
+      setEnabled(!!res.data?.maintenanceMode);
+      toast.success(next ? 'Maintenance mode ON — site hidden from visitors' : 'Maintenance mode OFF — site is live');
+    } catch {
+      toast.error('Failed to update maintenance mode');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveMessage = async () => {
+    setSaving(true);
+    try {
+      await settingsApi.update({ maintenanceMessage: message });
+      toast.success('Maintenance message saved');
+    } catch {
+      toast.error('Failed to save message');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm p-5">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+            🛠️ Maintenance Mode
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            When ON, public visitors see a maintenance page. The admin dashboard stays accessible.
+          </p>
+        </div>
+        <button
+          onClick={toggle}
+          disabled={!loaded || saving}
+          role="switch"
+          aria-checked={enabled}
+          className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+            enabled ? 'bg-orange-500' : 'bg-gray-300'
+          }`}
+        >
+          <span
+            className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+              enabled ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+      </div>
+
+      <div className="mt-4">
+        <span className={`inline-block text-xs px-2 py-0.5 rounded-full font-semibold ${
+          enabled ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
+        }`}>
+          {enabled ? 'Site is in maintenance' : 'Site is live'}
+        </span>
+      </div>
+
+      <div className="mt-4">
+        <label className="block text-xs font-semibold text-gray-600 mb-1.5">Maintenance message</label>
+        <textarea
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          rows={2}
+          placeholder="We are performing scheduled maintenance. Please check back soon."
+          className="w-full text-sm border border-gray-200 rounded-md px-3 py-2 outline-none focus:border-orange-400 resize-none"
+        />
+        <button
+          onClick={saveMessage}
+          disabled={saving}
+          className="mt-2 text-xs font-semibold bg-gray-900 hover:bg-gray-700 text-white px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
+        >
+          Save message
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function StatCard({ label, value, icon, color }: { label: string; value: number | string; icon: string; color: string }) {
   const bg = color + '20';
@@ -60,6 +161,9 @@ export default function AdminDashboard() {
         <StatCard label="Categories" value={stats?.categories ?? '—'} icon="🏷️" color="#1D4ED8" />
         <StatCard label="Users" value={stats?.users ?? '—'} icon="👥" color="#7C3AED" />
       </div>
+
+      {/* Maintenance mode */}
+      <MaintenanceCard />
 
       {/* Quick actions */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

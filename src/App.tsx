@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
+import MaintenanceGate from './components/MaintenanceGate';
 import Layout from './components/Layout';
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
@@ -38,11 +39,11 @@ export default function App() {
     <ErrorBoundary>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Layout><HomePage /></Layout>} />
-        <Route path='/category/:slug' element={<Layout><CategoryPage /></Layout>} />
-        <Route path='/article/:slug' element={<Layout><ArticlePage /></Layout>} />
+        <Route path='/' element={<MaintenanceGate><Layout><HomePage /></Layout></MaintenanceGate>} />
+        <Route path='/category/:slug' element={<MaintenanceGate><Layout><CategoryPage /></Layout></MaintenanceGate>} />
+        <Route path='/article/:slug' element={<MaintenanceGate><Layout><ArticlePage /></Layout></MaintenanceGate>} />
         <Route path='/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
-        <Route path='*' element={<Layout><NotFoundPage /></Layout>} />
+        <Route path='*' element={<MaintenanceGate><Layout><NotFoundPage /></Layout></MaintenanceGate>} />
       </Routes>
     </BrowserRouter>
     </ErrorBoundary>
