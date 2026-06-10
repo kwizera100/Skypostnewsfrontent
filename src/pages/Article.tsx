@@ -156,7 +156,7 @@ export default function ArticlePage() {
             </h3>
           </div>
           <div className="p-4 space-y-4">
-            {popularArticles.slice(0, 5).map((popularArticle, index) => (
+            {popularArticles.slice(0, 5).map((popularArticle) => (
               <Link
                 key={popularArticle.id}
                 to={`/article/${popularArticle.slug}`}
@@ -192,7 +192,7 @@ export default function ArticlePage() {
             </h3>
           </div>
           <div className="p-4 space-y-4">
-            {mostReadArticles.slice(0, 5).map((mostReadArticle, index) => (
+            {mostReadArticles.slice(0, 5).map((mostReadArticle) => (
               <Link
                 key={mostReadArticle.id}
                 to={`/article/${mostReadArticle.slug}`}

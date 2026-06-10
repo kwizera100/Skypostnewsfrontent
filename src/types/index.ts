@@ -27,6 +27,7 @@ export interface Article {
   imageUrl?: string;
   readTime: number;
   publishedAt: string;
+  views?: number;
   category: Category;
   author: Author;
 }

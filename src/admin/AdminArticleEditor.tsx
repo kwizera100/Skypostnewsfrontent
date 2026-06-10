@@ -245,7 +245,6 @@ function SmartYouTubeUploader({
 }) {
   const [url, setUrl] = useState('');
   const [videoId, setVideoId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   const extractVideoId = (youtubeUrl: string) => {
     const patterns = [
