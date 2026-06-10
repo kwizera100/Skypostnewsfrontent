@@ -8,7 +8,7 @@ export default function BreakingNewsTicker() {
 
   useEffect(() => {
     articlesApi.getLatest(10)
-      .then(res => setArticles(res.data))
+      .then(res => setArticles(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
   }, []);
 

@@ -102,12 +102,12 @@ export default function HomePage() {
 
   useEffect(() => {
     articlesApi.getLatest(30)
-      .then(res => setArticles(res.data))
+      .then(res => setArticles(Array.isArray(res.data) ? res.data : []))
       .catch(() => {})
       .finally(() => setLoading(false));
 
     categoriesApi.getAll().then(res => {
-      const cats: Category[] = res.data;
+      const cats: Category[] = Array.isArray(res.data) ? res.data : [];
       const top = cats
         .filter(c => ((c as any)._count?.articles ?? 0) > 0)
         .sort((a, b) => ((b as any)._count?.articles ?? 0) - ((a as any)._count?.articles ?? 0))
@@ -115,7 +115,10 @@ export default function HomePage() {
       setTopCats(top);
       top.forEach(cat => {
         articlesApi.getByCategory(cat.slug, 1, 5)
-          .then(r => setCatArticles(prev => ({ ...prev, [cat.slug]: r.data.data ?? r.data })))
+          .then(r => {
+            const list = Array.isArray(r.data?.data) ? r.data.data : (Array.isArray(r.data) ? r.data : []);
+            setCatArticles(prev => ({ ...prev, [cat.slug]: list }));
+          })
           .catch(() => {});
       });
     }).catch(() => {});

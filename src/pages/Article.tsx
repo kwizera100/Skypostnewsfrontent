@@ -33,9 +33,13 @@ export default function ArticlePage() {
       articlesApi.getLatest(5),
     ])
       .then(([articleRes, popularRes, mostReadRes]) => {
+        if (!articleRes.data || typeof articleRes.data !== 'object' || !('id' in articleRes.data)) {
+          setError(true);
+          return;
+        }
         setArticle(articleRes.data);
-        setPopularArticles(popularRes.data);
-        setMostReadArticles(mostReadRes.data);
+        setPopularArticles(Array.isArray(popularRes.data) ? popularRes.data : []);
+        setMostReadArticles(Array.isArray(mostReadRes.data) ? mostReadRes.data : []);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));

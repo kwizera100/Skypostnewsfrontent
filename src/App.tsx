@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary';
 import Layout from './components/Layout';
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
@@ -34,6 +35,7 @@ function AdminApp() {
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Layout><HomePage /></Layout>} />
@@ -43,5 +45,6 @@ export default function App() {
         <Route path='*' element={<Layout><NotFoundPage /></Layout>} />
       </Routes>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }

@@ -13,7 +13,7 @@ export default function Navbar() {
 
   useEffect(() => {
     categoriesApi.getAll().then(res => {
-      const cats: Category[] = res.data;
+      const cats: Category[] = Array.isArray(res.data) ? res.data : [];
       const sorted = cats
         .filter(c => ((c as any)._count?.articles ?? 0) > 0)
         .sort((a, b) => ((b as any)._count?.articles ?? 0) - ((a as any)._count?.articles ?? 0))

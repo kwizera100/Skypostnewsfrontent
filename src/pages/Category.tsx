@@ -33,7 +33,7 @@ export default function CategoryPage() {
     setLoading(true);
     articlesApi
       .getAll({ page, pageSize: PAGE_SIZE, categorySlug: slug })
-      .then((res) => setData(res.data))
+      .then((res) => setData(Array.isArray(res.data?.data) ? res.data : null))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [slug, page]);
