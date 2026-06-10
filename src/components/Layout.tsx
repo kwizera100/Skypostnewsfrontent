@@ -18,7 +18,7 @@ export default function Layout({ children }: Props) {
       <Navbar />
       <BreakingNewsTicker />
       <main className="flex-1 w-full">
-        <div className="w-full px-4 py-5">
+        <div className="w-full px-0 sm:px-4 py-3 sm:py-5">
           {children}
         </div>
       </main>

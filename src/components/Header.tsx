@@ -12,16 +12,6 @@ const SOCIAL_LINKS = [
 
 const TOP_LINKS = ['Home', 'Photos', 'TV', 'Advertise', 'Sports', 'Events'];
 
-function SkyPostNewsLogo() {
-  return (
-    <svg width="46" height="46" viewBox="0 0 46 46" aria-label="Sky Post News">
-      <circle cx="23" cy="23" r="23" fill="#0ea5e9" />
-      <path d="M12 18 L23 12 L34 18 L34 28 L23 34 L12 28 Z" fill="white" />
-      <text x="23" y="27" textAnchor="middle" fill="#0ea5e9" fontSize="10" fontWeight="900" fontFamily="Arial,sans-serif">SKY</text>
-    </svg>
-  );
-}
-
 export default function Header() {
   const [now, setNow] = useState(new Date());
   const [searchOpen, setSearchOpen] = useState(false);
@@ -71,23 +61,23 @@ export default function Header() {
       <div className="bg-white border-b-2 border-gray-100 py-3 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <SkyPostNewsLogo />
-            <div>
-              <span className="font-black text-3xl leading-none tracking-tight text-gray-900 group-hover:text-sky-600 transition-colors">
-                Sky Post News
-              </span>
-              <p className="text-gray-400 text-xs tracking-widest uppercase mt-0.5">News · Knowledge · Health</p>
-            </div>
+          <Link to="/" className="flex items-center flex-shrink-0">
+            <img
+              src="/logo-square.jpg"
+              alt="Sky Post News"
+              className="h-14 w-14 sm:h-16 sm:w-16 object-cover rounded-md"
+            />
           </Link>
 
-          {/* Ad banner (desktop) */}
-          <div className="hidden lg:block flex-1 mx-8">
-            <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #1a1a1a 100%)' }}
-              className="rounded-sm px-6 py-2.5 text-white text-center">
-              <div className="font-black text-lg tracking-tight leading-none">skypostnews.com</div>
-              <div className="text-xs opacity-80 tracking-wider">True News Every Day</div>
-            </div>
+          {/* Rectangle logo banner */}
+          <div className="flex-1 mx-3 sm:mx-8 flex justify-center">
+            <Link to="/">
+              <img
+                src="/logo-rect.jpg"
+                alt="Sky Post"
+                className="h-14 sm:h-20 w-auto object-contain rounded-sm"
+              />
+            </Link>
           </div>
 
           {/* Search */}

@@ -130,7 +130,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       {/* ── LATEST NEWS ── */}
-      <div className="bg-white border border-gray-200 p-4">
+      <div className="bg-white border-y sm:border border-gray-200 p-3 sm:p-4">
         <SectionHeading label="Latest News" />
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -170,7 +170,7 @@ export default function HomePage() {
         const main = items[0];
         const rest = items.slice(1);
         return (
-          <div key={cat.id} className="bg-white border border-gray-200 p-4">
+          <div key={cat.id} className="bg-white border-y sm:border border-gray-200 p-3 sm:p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <span className="w-1 h-6 bg-orange-500 block mr-3" />
@@ -203,7 +203,7 @@ export default function HomePage() {
 
       {/* ── MORE NEWS ── */}
       {moreItems.length > 0 && (
-        <div className="bg-white border border-gray-200 p-4">
+        <div className="bg-white border-y sm:border border-gray-200 p-3 sm:p-4">
           <SectionHeading label="More News" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {moreItems.map(a => <GridCard key={a.id} article={a} />)}
