@@ -1,0 +1,18 @@
+import axios from 'axios';
+
+const apiClient = axios.create({
+  baseURL: '/api',
+  headers: { 'Content-Type': 'application/json' },
+  timeout: 10000,
+});
+
+// Attach JWT token to every request if present
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('iremee_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default apiClient;
