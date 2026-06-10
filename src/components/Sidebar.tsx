@@ -89,10 +89,10 @@ export default function Sidebar() {
             +250 788 668 737
           </p>
           <a
-            href="mailto:info@iremee.com"
+            href="mailto:info@skypostnews.com"
             className="block text-red-700 hover:underline text-xs border-t border-gray-100 pt-2 mt-2"
           >
-            info@iremee.com
+            info@skypostnews.com
           </a>
         </div>
       </div>

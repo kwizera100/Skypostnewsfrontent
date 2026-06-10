@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import axios from 'axios';
+import apiClient from '../api/client';
 
 interface AdminUser {
   id: number;
@@ -24,23 +24,23 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const t = localStorage.getItem('iremee_token');
-    const u = localStorage.getItem('iremee_user');
+    const t = localStorage.getItem('skypostnews_token');
+    const u = localStorage.getItem('skypostnews_user');
     if (t && u) { setToken(t); setUser(JSON.parse(u)); }
     setLoading(false);
   }, []);
 
   async function login(email: string, password: string) {
-    const { data } = await axios.post('/api/auth/login', { email, password });
-    localStorage.setItem('iremee_token', data.token);
-    localStorage.setItem('iremee_user', JSON.stringify(data.user));
+    const { data } = await apiClient.post('/auth/login', { email, password });
+    localStorage.setItem('skypostnews_token', data.token);
+    localStorage.setItem('skypostnews_user', JSON.stringify(data.user));
     setToken(data.token);
     setUser(data.user);
   }
 
   function logout() {
-    localStorage.removeItem('iremee_token');
-    localStorage.removeItem('iremee_user');
+    localStorage.removeItem('skypostnews_token');
+    localStorage.removeItem('skypostnews_user');
     setToken('');
     setUser(null);
   }

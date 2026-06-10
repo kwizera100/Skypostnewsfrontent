@@ -63,7 +63,7 @@ export default function Navbar() {
 
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center justify-between py-2.5">
-          <span className="font-black text-sm text-gray-800 uppercase tracking-widest">Iremee</span>
+          <span className="font-black text-sm text-gray-800 uppercase tracking-widest">Sky Post News</span>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="flex flex-col gap-1.5 p-1.5 text-gray-700"

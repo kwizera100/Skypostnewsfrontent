@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <text x="40" y="47" textAnchor="middle" fill="#e05c1a" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
           </svg>
           <div>
-            <div className="text-white font-black text-sm tracking-tight">IREMEE</div>
+            <div className="text-white font-black text-sm tracking-tight">SKY POST NEWS</div>
             <div className="text-gray-500 text-xs">Admin Panel</div>
           </div>
         </div>
@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
-              IREMEE Admin
+              Sky Post News Admin
             </span>
           </div>
           <Link to="/" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">

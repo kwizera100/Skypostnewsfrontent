@@ -3,7 +3,7 @@
  * iremee.com no longer resolves, so Wayback Machine URLs are kept as-is.
  * Falls back to the placeholder if the value is empty/null.
  */
-export const PLACEHOLDER = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=IREMEE';
+export const PLACEHOLDER = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=SKY+POST+NEWS';
 
 /**
  * Ensure a Wayback Machine URL uses the `im_` (raw image) form.

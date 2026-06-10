@@ -6,7 +6,7 @@ import type { Article } from '../types';
 export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'bot'; text: string; articles?: Article[] }[]>([
-    { role: 'bot', text: 'Hello! I am Iremee AI. I can help you find articles on our website. What are you looking for?' }
+    { role: 'bot', text: 'Hello! I am Sky Post News AI. I can help you find articles on our website. What are you looking for?' }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ export default function AIChat() {
         >
           <MessageCircle size={28} />
           <span className="absolute right-full mr-3 bg-white text-gray-800 text-xs font-bold px-2 py-1 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Chat with Iremee AI
+            Chat with Sky Post News AI
           </span>
         </button>
       )}
@@ -81,7 +81,7 @@ export default function AIChat() {
                 <Bot size={20} />
               </div>
               <div>
-                <h3 className="font-bold text-sm">Iremee Assistant</h3>
+                <h3 className="font-bold text-sm">Sky Post News Assistant</h3>
                 <p className="text-[10px] opacity-80">Searching articles only</p>
               </div>
             </div>

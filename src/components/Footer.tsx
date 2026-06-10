@@ -29,10 +29,10 @@ export default function Footer() {
           <div>
             <Link to="/" className="block mb-3">
               <h2
-                className="font-black text-white leading-none hover:text-red-500 transition-colors"
+                className="font-black text-white leading-none hover:text-sky-500 transition-colors"
                 style={{ fontSize: '2.5rem', letterSpacing: '-1px' }}
               >
-                IREMEE
+                SKY POST NEWS
               </h2>
               <p className="text-gray-500 text-xs tracking-widest uppercase mt-1">
                 News · Knowledge · Health
@@ -96,9 +96,9 @@ export default function Footer() {
                 <span>+250 781 729 706</span>
               </p>
               <p className="flex items-center gap-3">
-                <span className="bg-red-700 p-1.5 text-white flex-shrink-0"><Mail size={12} /></span>
-                <a href="mailto:info@iremee.com" className="hover:text-red-400 transition-colors">
-                  info@iremee.com
+                <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Mail size={12} /></span>
+                <a href="mailto:info@skypostnews.com" className="hover:text-sky-400 transition-colors">
+                  info@skypostnews.com
                 </a>
               </p>
             </div>
@@ -110,7 +110,7 @@ export default function Footer() {
       <div style={{ backgroundColor: '#0a0a0a' }} className="border-t border-gray-900">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-gray-600">
-            © {year} <span className="text-gray-500 font-semibold">IREMEE</span>. All rights reserved.
+            © {year} <span className="text-gray-500 font-semibold">SKY POST NEWS</span>. All rights reserved.
           </p>
           <p className="text-xs text-gray-700">
             Designed by <a href="https://umunsi.com" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline font-bold">UMUNSI SITE LTD</a>

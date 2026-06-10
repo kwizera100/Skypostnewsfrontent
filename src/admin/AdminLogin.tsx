@@ -32,7 +32,7 @@ export default function AdminLogin() {
             <circle cx="40" cy="40" r="14" fill="white" />
             <text x="40" y="47" textAnchor="middle" fill="#e05c1a" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
           </svg>
-          <h1 className="text-2xl font-black mt-3 text-gray-900">IREMEE Admin</h1>
+          <h1 className="text-2xl font-black mt-3 text-gray-900">Sky Post News Admin</h1>
           <p className="text-xs text-gray-400 mt-1">Sign in to manage your news portal</p>
         </div>
 
@@ -47,7 +47,7 @@ export default function AdminLogin() {
             <input
               type="email" required value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="admin@iremee.com"
+              placeholder="admin@skypostnews.com"
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-orange-500"
             />
           </div>

@@ -12,13 +12,12 @@ const SOCIAL_LINKS = [
 
 const TOP_LINKS = ['Home', 'Photos', 'TV', 'Advertise', 'Sports', 'Events'];
 
-function IreemeLeafLogo() {
+function SkyPostNewsLogo() {
   return (
-    <svg width="46" height="46" viewBox="0 0 46 46" aria-label="IREMEE">
-      <circle cx="23" cy="23" r="23" fill="#e05c1a" />
-      <circle cx="23" cy="23" r="16" fill="none" stroke="white" strokeWidth="3" />
-      <circle cx="23" cy="23" r="9" fill="white" />
-      <text x="23" y="28" textAnchor="middle" fill="#e05c1a" fontSize="13" fontWeight="900" fontFamily="Georgia,serif">i</text>
+    <svg width="46" height="46" viewBox="0 0 46 46" aria-label="Sky Post News">
+      <circle cx="23" cy="23" r="23" fill="#0ea5e9" />
+      <path d="M12 18 L23 12 L34 18 L34 28 L23 34 L12 28 Z" fill="white" />
+      <text x="23" y="27" textAnchor="middle" fill="#0ea5e9" fontSize="10" fontWeight="900" fontFamily="Arial,sans-serif">SKY</text>
     </svg>
   );
 }
@@ -73,10 +72,10 @@ export default function Header() {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <IreemeLeafLogo />
+            <SkyPostNewsLogo />
             <div>
-              <span className="font-black text-3xl leading-none tracking-tight text-gray-900 group-hover:text-orange-600 transition-colors">
-                Iremee
+              <span className="font-black text-3xl leading-none tracking-tight text-gray-900 group-hover:text-sky-600 transition-colors">
+                Sky Post News
               </span>
               <p className="text-gray-400 text-xs tracking-widest uppercase mt-0.5">News · Knowledge · Health</p>
             </div>
@@ -84,9 +83,9 @@ export default function Header() {
 
           {/* Ad banner (desktop) */}
           <div className="hidden lg:block flex-1 mx-8">
-            <div style={{ background: 'linear-gradient(135deg, #e05c1a 0%, #ff8c42 50%, #1a1a1a 100%)' }}
+            <div style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #1a1a1a 100%)' }}
               className="rounded-sm px-6 py-2.5 text-white text-center">
-              <div className="font-black text-lg tracking-tight leading-none">iremee.com</div>
+              <div className="font-black text-lg tracking-tight leading-none">skypostnews.com</div>
               <div className="text-xs opacity-80 tracking-wider">True News Every Day</div>
             </div>
           </div>
