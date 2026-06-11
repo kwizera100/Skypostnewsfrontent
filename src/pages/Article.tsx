@@ -73,7 +73,7 @@ export default function ArticlePage() {
     );
   }
 
-  const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-red-600 text-white';
+  const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-sky-600 text-white';
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -83,7 +83,7 @@ export default function ArticlePage() {
         <div className="px-6 pt-4">
           <Link
             to={`/category/${article.category.slug}`}
-            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 transition-colors"
+            className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-sky-600 transition-colors"
           >
             <ArrowLeft size={14} />
             {article.category.name}
@@ -106,7 +106,7 @@ export default function ArticlePage() {
 
           <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500 border-t border-b border-gray-100 py-3">
             <span className="flex items-center gap-1 font-medium text-gray-700">
-              <User size={14} className="text-red-600" />
+              <User size={14} className="text-sky-600" />
               {article.author.name}
             </span>
             <span className="flex items-center gap-1">
@@ -140,7 +140,7 @@ export default function ArticlePage() {
         <div
           className="px-6 py-6 prose prose-lg max-w-none text-gray-800 leading-relaxed
             prose-headings:font-bold prose-headings:text-gray-900
-            prose-a:text-red-600 prose-a:no-underline hover:prose-a:underline
+            prose-a:text-sky-600 prose-a:no-underline hover:prose-a:underline
             prose-p:my-6 prose-p:leading-8 prose-p:text-base
             prose-img:my-8 prose-img:rounded-xl prose-img:shadow-lg
             prose-ul:my-6 prose-ol:my-6 prose-li:my-2
@@ -175,7 +175,7 @@ export default function ArticlePage() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-red-600 transition-colors">
+                  <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-sky-600 transition-colors">
                     {popularArticle.title}
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">
@@ -189,7 +189,7 @@ export default function ArticlePage() {
 
         {/* Most Read */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-red-500 to-red-600 px-4 py-3">
+          <div className="bg-gradient-to-r from-sky-500 to-sky-600 px-4 py-3">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Eye size={16} />
               Most Read
@@ -211,7 +211,7 @@ export default function ArticlePage() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-red-600 transition-colors">
+                  <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-sky-600 transition-colors">
                     {mostReadArticle.title}
                   </h4>
                   <p className="text-xs text-gray-500 mt-1">

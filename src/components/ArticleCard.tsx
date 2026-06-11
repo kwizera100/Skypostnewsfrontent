@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function ArticleCard({ article, variant = 'default' }: Props) {
-  const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-red-700 text-white';
+  const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-sky-700 text-white';
   const thumb = getImageSrc(article.thumbnailUrl || article.imageUrl);
 
   // ── Compact (sidebar list item) ──────────────────────────────────────────
@@ -34,7 +34,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         <div className="flex-1 min-w-0">
           <Link
             to={`/article/${article.slug}`}
-            className="block text-sm font-bold text-gray-800 hover:text-red-700 line-clamp-2 leading-snug mb-1"
+            className="block text-sm font-bold text-gray-800 hover:text-sky-700 line-clamp-2 leading-snug mb-1"
           >
             {article.title}
           </Link>
@@ -71,7 +71,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         <div className="flex-1 min-w-0">
           <Link
             to={`/article/${article.slug}`}
-            className="block font-bold text-gray-900 hover:text-red-700 line-clamp-2 text-sm leading-snug mb-1"
+            className="block font-bold text-gray-900 hover:text-sky-700 line-clamp-2 text-sm leading-snug mb-1"
           >
             {article.title}
           </Link>
@@ -89,14 +89,14 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
   // ── Featured (large hero) ─────────────────────────────────────────────────
   if (variant === 'featured') {
     return (
-      <article className="featured-card">
+      <article className="featusky-card">
         <div className="relative overflow-hidden">
           <Link to={`/article/${article.slug}`}>
             <img
               src={thumb}
               alt={article.title}
               onError={onImgError}
-              className="featured-img w-full"
+              className="featusky-img w-full"
               style={{ height: '360px', objectFit: 'cover' }}
             />
             {/* Dark gradient overlay */}
@@ -112,7 +112,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
           {/* Title overlaid at bottom */}
           <div className="absolute bottom-0 left-0 right-0 p-5">
             <Link to={`/article/${article.slug}`}>
-              <h2 className="text-white text-xl sm:text-2xl font-black leading-snug hover:text-red-300 transition-colors line-clamp-3">
+              <h2 className="text-white text-xl sm:text-2xl font-black leading-snug hover:text-sky-300 transition-colors line-clamp-3">
                 {article.title}
               </h2>
             </Link>
@@ -169,7 +169,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
       <div className="p-4">
         <Link
           to={`/article/${article.slug}`}
-          className="block text-base font-bold text-gray-900 hover:text-red-700 transition-colors line-clamp-2 leading-snug mb-2"
+          className="block text-base font-bold text-gray-900 hover:text-sky-700 transition-colors line-clamp-2 leading-snug mb-2"
         >
           {article.title}
         </Link>

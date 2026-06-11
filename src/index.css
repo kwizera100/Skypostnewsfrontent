@@ -82,13 +82,13 @@
 
   /* Read more button */
   .btn-read-more {
-    @apply inline-block mt-3 text-red-600 hover:bg-red-600 hover:text-white font-semibold text-xs
-           border border-red-600 px-3 py-1.5 transition-all duration-200 uppercase tracking-wide;
+    @apply inline-block mt-3 text-sky-600 hover:bg-sky-600 hover:text-white font-semibold text-xs
+           border border-sky-600 px-3 py-1.5 transition-all duration-200 uppercase tracking-wide;
   }
 
   /* Nav link */
   .nav-link {
-    @apply text-white hover:bg-red-800 font-semibold text-sm transition-colors duration-200 py-3 px-4 block;
+    @apply text-white hover:bg-sky-800 font-semibold text-sm transition-colors duration-200 py-3 px-4 block;
   }
 
   /* Sidebar widgets */
@@ -96,8 +96,8 @@
     @apply bg-white shadow-sm mb-5 overflow-hidden;
   }
   .sidebar-widget-header {
-    @apply text-xs font-black uppercase tracking-widest text-white bg-red-700 px-4 py-2.5
-           border-l-4 border-red-900;
+    @apply text-xs font-black uppercase tracking-widest text-white bg-sky-700 px-4 py-2.5
+           border-l-4 border-sky-900;
   }
   .sidebar-widget-body {
     @apply p-4;
@@ -105,23 +105,23 @@
 
   /* Section heading (Digital Newspaper style) */
   .dn-section-heading {
-    @apply flex items-center gap-0 mb-5 border-b-2 border-red-700 pb-0;
+    @apply flex items-center gap-0 mb-5 border-b-2 border-sky-700 pb-0;
   }
   .dn-section-heading span {
-    @apply bg-red-700 text-white text-xs font-black uppercase tracking-widest px-4 py-2;
+    @apply bg-sky-700 text-white text-xs font-black uppercase tracking-widest px-4 py-2;
   }
 
   /* Featured hero card */
-  .featured-card {
+  .featusky-card {
     @apply bg-white shadow-sm overflow-hidden mb-5;
   }
-  .featured-card .featured-img {
+  .featusky-card .featusky-img {
     @apply w-full object-cover transition-transform duration-500;
   }
-  .featured-card .featured-body {
+  .featusky-card .featusky-body {
     @apply p-5;
   }
-  .featured-card .featured-title {
-    @apply text-xl sm:text-2xl font-black text-gray-900 hover:text-red-600 transition-colors leading-snug line-clamp-3;
+  .featusky-card .featusky-title {
+    @apply text-xl sm:text-2xl font-black text-gray-900 hover:text-sky-600 transition-colors leading-snug line-clamp-3;
   }
 }

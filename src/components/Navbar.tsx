@@ -64,7 +64,7 @@ export default function Navbar() {
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center justify-between py-2.5">
           <Link to="/" className="flex items-center" aria-label="Home">
-            <img src="/logo-rect.jpg" alt="Sky Post News" className="h-7 w-auto object-contain" />
+            <img src="/logo-bird.png" alt="Sky Post News" onError={e => { e.currentTarget.src = '/logo-rect.jpg'; }} className="h-8 w-auto object-contain mix-blend-multiply" />
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

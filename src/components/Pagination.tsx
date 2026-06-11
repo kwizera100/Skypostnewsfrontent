@@ -44,7 +44,7 @@ export default function Pagination({ page, totalPages, onPageChange }: Props) {
             onClick={() => onPageChange(p as number)}
             className={`px-3 py-2 text-sm font-medium border rounded transition-colors ${
               p === page
-                ? 'bg-red-600 text-white border-red-600'
+                ? 'bg-sky-600 text-white border-sky-600'
                 : 'text-gray-700 bg-white border-gray-300 hover:bg-gray-50'
             }`}
           >

@@ -38,7 +38,7 @@ export default function CategoryPage() {
       .finally(() => setLoading(false));
   }, [slug, page]);
 
-  const headerColor = CATEGORY_COLORS[slug ?? ''] ?? 'bg-red-600';
+  const headerColor = CATEGORY_COLORS[slug ?? ''] ?? 'bg-sky-600';
 
   return (
     <div>

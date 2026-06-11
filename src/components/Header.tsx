@@ -60,12 +60,13 @@ export default function Header() {
       {/* ── WHITE LOGO + SEARCH BAR ───────────────────────────── */}
       <div className="bg-white border-b-2 border-gray-100 py-3 px-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
-          {/* Rectangle logo */}
+          {/* Bird logo (transparent — light background hidden via blend) */}
           <Link to="/" className="flex items-center min-w-0">
             <img
-              src="/logo-rect.jpg"
+              src="/logo-bird.png"
               alt="Sky Post News"
-              className="h-12 sm:h-20 w-auto max-w-[60vw] object-contain rounded-sm"
+              onError={e => { e.currentTarget.src = '/logo-rect.jpg'; }}
+              className="h-14 sm:h-16 w-auto max-w-[50vw] object-contain mix-blend-multiply"
             />
           </Link>
 
@@ -93,6 +94,37 @@ export default function Header() {
                 <span className="hidden md:block">Shakisha</span>
               </button>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── SITE NAME BANNER (desktop/tablet only) ────────────── */}
+      <div className="hidden sm:block bg-gray-100 px-4 py-3">
+        <div
+          className="max-w-7xl mx-auto flex items-stretch overflow-hidden rounded-sm shadow-sm"
+          style={{ background: 'linear-gradient(120deg, #38bdf8 0%, #0284c7 55%, #075985 100%)' }}
+        >
+          <Link to="/" className="flex-1 flex items-center px-6 py-3 min-w-0">
+            <span
+              className="font-black lowercase leading-none truncate"
+              style={{
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                color: '#f3eccf',
+                fontSize: 'clamp(2rem, 5.5vw, 4rem)',
+                letterSpacing: '-2px',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.25)',
+              }}
+            >
+              skypostnews.com
+            </span>
+          </Link>
+          <div
+            className="flex items-center px-6 lg:px-10"
+            style={{ backgroundColor: '#161616', clipPath: 'polygon(8% 0, 100% 0, 100% 100%, 0 100%)' }}
+          >
+            <span className="text-white font-bold text-lg lg:text-2xl whitespace-nowrap pl-4">
+              News and Magazine
+            </span>
           </div>
         </div>
       </div>

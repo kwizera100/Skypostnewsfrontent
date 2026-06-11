@@ -57,13 +57,13 @@ export default function Sidebar() {
                   key={cat.id}
                   to={`/category/${cat.slug}`}
                   className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100 last:border-0
-                             hover:bg-red-700 hover:text-white transition-colors group"
+                             hover:bg-sky-700 hover:text-white transition-colors group"
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-gray-700 group-hover:text-white">
                     {cat.name}
                   </span>
                   {cat._count && (
-                    <span className="bg-gray-100 group-hover:bg-red-600 text-gray-600 group-hover:text-white
+                    <span className="bg-gray-100 group-hover:bg-sky-600 text-gray-600 group-hover:text-white
                                      text-xs font-bold px-2 py-0.5 transition-colors">
                       {cat._count.articles}
                     </span>
@@ -81,16 +81,16 @@ export default function Sidebar() {
         </div>
         <div className="sidebar-widget-body text-sm text-gray-700 space-y-2.5">
           <p className="flex items-center gap-2 font-bold text-gray-900">
-            <span className="bg-red-700 text-white p-1"><Phone size={12} /></span>
+            <span className="bg-sky-700 text-white p-1"><Phone size={12} /></span>
             +250 781 729 706
           </p>
           <p className="flex items-center gap-2 font-bold text-gray-900">
-            <span className="bg-red-700 text-white p-1"><Phone size={12} /></span>
+            <span className="bg-sky-700 text-white p-1"><Phone size={12} /></span>
             +250 788 668 737
           </p>
           <a
             href="mailto:info@skypostnews.com"
-            className="block text-red-700 hover:underline text-xs border-t border-gray-100 pt-2 mt-2"
+            className="block text-sky-700 hover:underline text-xs border-t border-gray-100 pt-2 mt-2"
           >
             info@skypostnews.com
           </a>

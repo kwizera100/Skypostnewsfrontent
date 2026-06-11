@@ -50,7 +50,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="bg-gray-800 hover:bg-red-700 text-gray-400 hover:text-white
+                  className="bg-gray-800 hover:bg-sky-700 text-gray-400 hover:text-white
                              transition-colors p-2.5"
                 >
                   <Icon size={15} />
@@ -68,10 +68,10 @@ export default function Footer() {
             <ul className="space-y-2">
               {CATEGORIES.map(({ label, to }) => (
                 <li key={to} className="flex items-center gap-2">
-                  <span className="text-red-700 text-xs">◆</span>
+                  <span className="text-sky-700 text-xs">◆</span>
                   <Link
                     to={to}
-                    className="text-sm text-gray-400 hover:text-red-400 transition-colors"
+                    className="text-sm text-gray-400 hover:text-sky-400 transition-colors"
                   >
                     {label}
                   </Link>
@@ -88,11 +88,11 @@ export default function Footer() {
             </h3>
             <div className="space-y-3 text-sm">
               <p className="flex items-center gap-3">
-                <span className="bg-red-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
+                <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
                 <span>+250 788 668 737</span>
               </p>
               <p className="flex items-center gap-3">
-                <span className="bg-red-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
+                <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
                 <span>+250 781 729 706</span>
               </p>
               <p className="flex items-center gap-3">
