@@ -28,9 +28,9 @@ export default function Header() {
     <header>
       {/* ── TOP DARK BAR ──────────────────────────────────────── */}
       <div style={{ backgroundColor: '#111827' }} className="py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* Quick nav */}
-          <div className="flex items-center gap-0">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          {/* Quick nav (hidden on mobile to keep the bar clean) */}
+          <div className="hidden sm:flex items-center gap-0 min-w-0 overflow-hidden">
             {TOP_LINKS.map((label, i) => (
               <span key={label} className="flex items-center">
                 {i > 0 && <span className="text-gray-600 text-xs mx-1">|</span>}
@@ -42,7 +42,7 @@ export default function Header() {
             ))}
           </div>
           {/* Social + date */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 ml-auto">
             <span className="text-gray-500 text-xs hidden md:block">{dateStr}</span>
             <div className="flex items-center gap-1">
               {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
@@ -59,26 +59,15 @@ export default function Header() {
 
       {/* ── WHITE LOGO + SEARCH BAR ───────────────────────────── */}
       <div className="bg-white border-b-2 border-gray-100 py-3 px-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center flex-shrink-0">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          {/* Rectangle logo */}
+          <Link to="/" className="flex items-center min-w-0">
             <img
-              src="/logo-square.jpg"
+              src="/logo-rect.jpg"
               alt="Sky Post News"
-              className="h-14 w-14 sm:h-16 sm:w-16 object-cover rounded-md"
+              className="h-12 sm:h-20 w-auto max-w-[60vw] object-contain rounded-sm"
             />
           </Link>
-
-          {/* Rectangle logo banner */}
-          <div className="flex-1 mx-3 sm:mx-8 flex justify-center">
-            <Link to="/">
-              <img
-                src="/logo-rect.jpg"
-                alt="Sky Post"
-                className="h-14 sm:h-20 w-auto object-contain rounded-sm"
-              />
-            </Link>
-          </div>
 
           {/* Search */}
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -90,7 +79,7 @@ export default function Header() {
                   value={searchQ}
                   onChange={e => setSearchQ(e.target.value)}
                   placeholder="Shakisha…"
-                  className="px-3 py-1.5 text-sm outline-none w-48"
+                  className="px-3 py-1.5 text-sm outline-none w-32 sm:w-48"
                 />
                 <button type="submit" className="bg-orange-500 text-white px-3 py-1.5 hover:bg-orange-600">
                   <Search size={14} />
@@ -98,7 +87,8 @@ export default function Header() {
               </form>
             ) : (
               <button onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 border-2 border-gray-200 hover:border-orange-500 rounded-sm px-4 py-2 text-gray-500 hover:text-orange-600 transition-colors text-sm font-medium">
+                aria-label="Search"
+                className="flex items-center gap-2 border-2 border-gray-200 hover:border-orange-500 rounded-sm px-3 py-2 sm:px-4 text-gray-500 hover:text-orange-600 transition-colors text-sm font-medium">
                 <Search size={15} />
                 <span className="hidden md:block">Shakisha</span>
               </button>
