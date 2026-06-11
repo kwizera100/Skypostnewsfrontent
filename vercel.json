@@ -11,6 +11,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://skypostnewsBACKEND.vercel.app"
+    "VITE_API_URL": "https://api.skypostnews.com"
   }
 }
