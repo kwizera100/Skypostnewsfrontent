@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { categoriesApi } from '../api/endpoints';
 import type { Category } from '../types';
 
-const STATIC_NAV = [{ label: 'Amakuru', to: '/' }];
+const STATIC_NAV: { label: string; to: string }[] = [];
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -63,7 +63,9 @@ export default function Navbar() {
 
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center justify-between py-2.5">
-          <Link to="/" className="text-sm font-bold text-orange-600 uppercase tracking-wide">Amakuru</Link>
+          <Link to="/" className="flex items-center" aria-label="Home">
+            <img src="/logo-rect.jpg" alt="Sky Post News" className="h-7 w-auto object-contain" />
+          </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="flex flex-col gap-1.5 p-1.5 text-gray-700"
