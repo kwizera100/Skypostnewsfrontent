@@ -1,3 +1,5 @@
+import { API_ORIGIN } from '../api/client';
+
 /**
  * Resolves an image URL.
  * iremee.com no longer resolves, so Wayback Machine URLs are kept as-is.
@@ -5,11 +7,31 @@
  */
 export const PLACEHOLDER = 'https://placehold.co/800x450/e5e7eb/9ca3af?text=SKY+POST+NEWS';
 
+// Where uploaded images are actually served from.
+const UPLOADS_HOST = API_ORIGIN || '';
+
+/**
+ * Point an uploaded-image URL at the real API host.
+ * Handles values that were saved with a baked-in dev origin
+ * (e.g. http://localhost:5173/uploads/x.webp) or as a relative path
+ * (e.g. /uploads/x.webp).
+ */
+export function resolveUploadUrl(url: string): string {
+  // Relative path -> prefix with API host
+  if (url.startsWith('/uploads/')) return `${UPLOADS_HOST}${url}`;
+  // Absolute URL whose path is /uploads/... -> swap host for the API host
+  const m = url.match(/^https?:\/\/[^/]+(\/uploads\/.*)$/i);
+  if (m) return `${UPLOADS_HOST}${m[1]}`;
+  return url;
+}
+
 /**
  * Ensure a Wayback Machine URL uses the `im_` (raw image) form.
  * Non-Wayback URLs are returned unchanged.
  */
 export function normaliseImageUrl(url: string): string {
+  // Fix uploaded images that have the wrong host baked in.
+  url = resolveUploadUrl(url);
   // Already im_ form — keep as-is
   if (/web\.archive\.org\/web\/\d+im_\//.test(url)) return url;
   // Plain timestamp form — insert im_ so the browser gets the raw image
@@ -37,8 +59,15 @@ export function onImgError(e: React.SyntheticEvent<HTMLImageElement>) {
  * Process HTML article content: ensure Wayback Machine image URLs use im_ form.
  */
 export function fixContentImages(html: string): string {
+  // Repoint uploaded images (absolute localhost/other host, or relative) to the API host.
+  const fixedUploads = html
+    .replace(/(<img[^>]+src=["'])https?:\/\/[^/"']+(\/uploads\/[^"']+)(["'])/gi,
+      (_m, prefix, path, suffix) => `${prefix}${UPLOADS_HOST}${path}${suffix}`)
+    .replace(/(<img[^>]+src=["'])(\/uploads\/[^"']+)(["'])/gi,
+      (_m, prefix, path, suffix) => `${prefix}${UPLOADS_HOST}${path}${suffix}`);
+
   // Ensure Wayback Machine image URLs use im_ form
-  const fixedWayback = html.replace(
+  const fixedWayback = fixedUploads.replace(
     /(<img[^>]+src=["'])(https?:\/\/web\.archive\.org\/web\/)(\d+)(\/[^"']+)(["'])/gi,
     (_match, prefix, base, ts, rest, suffix) => `${prefix}${base}${ts}im_${rest}${suffix}`,
   );

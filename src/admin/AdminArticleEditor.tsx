@@ -6,6 +6,7 @@ import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import axios from 'axios';
 import { useAdminAuth } from './AdminAuth';
+import { resolveUploadUrl } from '../utils/images';
 
 interface Category { id: number; name: string; slug: string; }
 
@@ -46,8 +47,7 @@ function SmartImageUploader({
       const { data } = await axios.post('/api/upload', fd, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
       });
-      const url = data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`;
-      setPreview(url);
+      setPreview(resolveUploadUrl(data.url));
       setUploading(false);
     } catch {
       // Fallback: use local object URL
@@ -524,9 +524,8 @@ export default function AdminArticleEditor() {
       const { data } = await axios.post('/api/upload', fd, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
       });
-      const url = data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`;
-      setThumbUrl(url);
-      setThumbPreview(url);
+      setThumbUrl(data.url);
+      setThumbPreview(resolveUploadUrl(data.url));
     } catch {
       // Fallback: use local object URL
       const url = URL.createObjectURL(file);
@@ -552,7 +551,7 @@ export default function AdminArticleEditor() {
       const { data } = await axios.post('/api/upload', fd, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
       });
-      const url = data.url.startsWith('http') ? data.url : `${window.location.origin}${data.url}`;
+      const url = resolveUploadUrl(data.url);
       
       // Insert image at cursor position
       if (editor) {
@@ -731,7 +730,7 @@ export default function AdminArticleEditor() {
                   <input value={thumbUrl} onChange={e => { 
                     const url = e.target.value;
                     setThumbUrl(url); 
-                    setThumbPreview(url.startsWith('http') || url.startsWith('/') ? url : `${window.location.origin}${url}`); 
+                    setThumbPreview(resolveUploadUrl(url)); 
                   }}
                     placeholder="https://…"
                     className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all" />

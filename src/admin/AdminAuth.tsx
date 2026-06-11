@@ -48,8 +48,16 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   return <Ctx.Provider value={{ user, token, loading, login, logout }}>{children}</Ctx.Provider>;
 }
 
+const GUEST_CTX: AuthCtx = {
+  user: null,
+  token: '',
+  loading: false,
+  login: async () => { throw new Error('Auth provider not available'); },
+  logout: () => {},
+};
+
 export function useAdminAuth() {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useAdminAuth must be inside AdminAuthProvider');
-  return ctx;
+  // Public pages (e.g. the article view) may call this outside the provider.
+  // Return a safe guest context instead of crashing the whole app.
+  return useContext(Ctx) ?? GUEST_CTX;
 }

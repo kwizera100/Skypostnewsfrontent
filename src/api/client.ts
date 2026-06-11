@@ -4,7 +4,7 @@ import axios from 'axios';
 // apiClient and as the global axios default, so admin pages that call the
 // global `axios` with absolute `/api/...` paths resolve to the API server
 // instead of the SPA host (which returns index.html on Vercel).
-const API_ORIGIN = import.meta.env.VITE_API_URL
+export const API_ORIGIN = import.meta.env.VITE_API_URL
   ? import.meta.env.VITE_API_URL
   : import.meta.env.PROD
     ? 'https://api.skypostnews.com'
