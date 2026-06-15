@@ -1,6 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useAdminAuth } from './AdminAuth';
+import { API_ORIGIN } from '../api/client';
+
+const resolveUrl = (url: string) =>
+  url.startsWith('http') ? url : `${API_ORIGIN}${url}`;
 
 interface MediaItem { url: string; name: string; size?: number; }
 
@@ -40,7 +44,7 @@ export default function AdminMedia() {
   }, [token]);
 
   function copyUrl(url: string) {
-    const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    const fullUrl = resolveUrl(url);
     navigator.clipboard.writeText(fullUrl).then(() => {
       setCopied(url);
       setTimeout(() => setCopied(null), 1500);
@@ -81,7 +85,7 @@ export default function AdminMedia() {
           {items.map((item, i) => (
             <div key={i} className="bg-white rounded-lg shadow-sm overflow-hidden group relative">
               <img
-                src={item.url.startsWith('http') ? item.url : `${window.location.origin}${item.url}`}
+                src={resolveUrl(item.url)}
                 alt={item.name}
                 className="w-full h-24 object-cover"
               />
