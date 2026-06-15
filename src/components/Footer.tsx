@@ -11,10 +11,10 @@ const CATEGORIES = [
 ];
 
 const SOCIAL = [
-  { Icon: FacebookIcon, href: 'https://www.facebook.com/rwanda.lyvine', label: 'Facebook' },
-  { Icon: InstagramIcon, href: 'https://instagram.com/lyvinerwanda', label: 'Instagram' },
-  { Icon: TwitterIcon, href: 'https://twitter.com/rwanda_lyvine', label: 'Twitter' },
-  { Icon: YoutubeIcon, href: 'https://youtube.com/@lyvinerwandatv1', label: 'YouTube' },
+  { Icon: FacebookIcon, href: 'https://www.facebook.com/skypostnews', label: 'Facebook' },
+  { Icon: InstagramIcon, href: 'https://www.instagram.com/skypost01?igsh=Y2ZuZHlnbWRvd3R1&utm_source=qr', label: 'Instagram' },
+  { Icon: TwitterIcon, href: 'https://x.com/skypost01?s=11', label: 'X' },
+  { Icon: YoutubeIcon, href: 'https://youtube.com/@skypostnews', label: 'YouTube' },
 ];
 
 export default function Footer() {
@@ -89,16 +89,12 @@ export default function Footer() {
             <div className="space-y-3 text-sm">
               <p className="flex items-center gap-3">
                 <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
-                <span>+250 788 668 737</span>
-              </p>
-              <p className="flex items-center gap-3">
-                <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Phone size={12} /></span>
-                <span>+250 781 729 706</span>
+                <span>+250 782 768 957</span>
               </p>
               <p className="flex items-center gap-3">
                 <span className="bg-sky-700 p-1.5 text-white flex-shrink-0"><Mail size={12} /></span>
-                <a href="mailto:info@skypostnews.com" className="hover:text-sky-400 transition-colors">
-                  info@skypostnews.com
+                <a href="mailto:skypostn@gmail.com" className="hover:text-sky-400 transition-colors">
+                  skypostn@gmail.com
                 </a>
               </p>
             </div>
@@ -113,7 +109,7 @@ export default function Footer() {
             © {year} <span className="text-gray-500 font-semibold">SKY POST NEWS</span>. All rights reserved.
           </p>
           <p className="text-xs text-gray-700">
-            Designed by <a href="https://umunsi.com" target="_blank" rel="noopener noreferrer" className="text-orange-600 hover:underline font-bold">UMUNSI SITE LTD</a>
+            Designed by <a href="https://umunsi.com" target="_blank" rel="noopener noreferrer" className="text-sky-500 hover:underline font-bold">UMUNSI SITE LTD</a>
           </p>
         </div>
       </div>

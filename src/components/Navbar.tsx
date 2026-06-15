@@ -43,20 +43,20 @@ export default function Navbar() {
                 className={`
                   relative px-4 py-3.5 text-sm font-semibold tracking-wide transition-colors
                   ${isActive(to)
-                    ? 'text-orange-600'
-                    : 'text-gray-700 hover:text-orange-600'
+                    ? 'text-sky-600'
+                    : 'text-gray-700 hover:text-sky-600'
                   }
                 `}
               >
                 {label}
                 {isActive(to) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-500" />
                 )}
               </Link>
             ))}
           </div>
           <a href="/admin"
-            className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-orange-500 transition-colors py-3.5 px-2">
+            className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-sky-500 transition-colors py-3.5 px-2">
             Admin <ChevronDown size={12} />
           </a>
         </div>
@@ -85,7 +85,7 @@ export default function Navbar() {
                 to={to}
                 onClick={() => setMobileOpen(false)}
                 className={`block px-2 py-2.5 text-sm font-semibold border-b border-gray-50 last:border-0
-                  ${isActive(to) ? 'text-orange-600 bg-orange-50' : 'text-gray-700 hover:bg-gray-50'}`}
+                  ${isActive(to) ? 'text-sky-600 bg-sky-50' : 'text-gray-700 hover:bg-gray-50'}`}
               >
                 {label}
               </Link>

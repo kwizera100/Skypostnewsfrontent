@@ -8,6 +8,7 @@ const NAV = [
   { label: 'Categories', to: '/admin/categories',icon: '🏷️' },
   { label: 'Users',      to: '/admin/users',     icon: '👥' },
   { label: 'Media',      to: '/admin/media',     icon: '🖼️' },
+  { label: 'Ad Banners', to: '/admin/ads',       icon: '📢' },
   { label: 'New Article',to: '/admin/articles/new', icon: '✏️' },
 ];
 

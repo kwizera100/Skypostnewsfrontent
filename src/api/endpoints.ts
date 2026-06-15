@@ -47,6 +47,28 @@ export const settingsApi = {
   update: (data: Partial<SiteSettings>) => apiClient.put<SiteSettings>('/settings', data),
 };
 
+export interface AdBanner {
+  id: number;
+  position: string;
+  imageUrl: string;
+  linkUrl: string | null;
+  altText: string | null;
+  width: number;
+  height: number;
+  active: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const adsApi = {
+  getAll: () => apiClient.get<AdBanner[]>('/ads'),
+  getAllAdmin: () => apiClient.get<AdBanner[]>('/ads/all'),
+  getByPosition: (position: string) => apiClient.get<AdBanner>(`/ads/${position}`),
+  update: (position: string, data: Partial<AdBanner>) => apiClient.put<AdBanner>(`/ads/${position}`, data),
+  delete: (position: string) => apiClient.delete(`/ads/${position}`),
+};
+
 export const authApi = {
   login: (email: string, password: string) =>
     apiClient.post('/auth/login', { email, password }),
