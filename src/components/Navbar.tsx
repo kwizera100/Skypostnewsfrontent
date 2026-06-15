@@ -1,31 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
-import { categoriesApi } from '../api/endpoints';
-import type { Category } from '../types';
 
-const STATIC_NAV: { label: string; to: string }[] = [];
+// Fixed English navigation matching the Sky Post News design.
+const NAV_ITEMS: { label: string; to: string }[] = [
+  { label: 'Home', to: '/' },
+  { label: 'Entertainment', to: '/category/entertainment' },
+  { label: 'Education', to: '/category/education' },
+  { label: 'Politics', to: '/category/politics' },
+  { label: 'Health', to: '/category/health' },
+  { label: 'Sports', to: '/category/sports' },
+  { label: 'Listen', to: '/category/listen' },
+  { label: 'Markets', to: '/category/markets' },
+  { label: 'Opinion', to: '/category/opinion' },
+  { label: 'About Us', to: '/about' },
+];
 
 export default function Navbar() {
   const { pathname } = useLocation();
-  const [categories, setCategories] = useState<Category[]>([]);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    categoriesApi.getAll().then(res => {
-      const cats: Category[] = Array.isArray(res.data) ? res.data : [];
-      const sorted = cats
-        .filter(c => ((c as any)._count?.articles ?? 0) > 0)
-        .sort((a, b) => ((b as any)._count?.articles ?? 0) - ((a as any)._count?.articles ?? 0))
-        .slice(0, 9);
-      setCategories(sorted);
-    }).catch(() => {});
-  }, []);
-
-  const navItems = [
-    ...STATIC_NAV,
-    ...categories.map(c => ({ label: c.name, to: `/category/${c.slug}` })),
-  ];
+  const navItems = NAV_ITEMS;
 
   const isActive = (to: string) =>
     to === '/' ? pathname === '/' : pathname.startsWith(to);

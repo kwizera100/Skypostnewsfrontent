@@ -4,10 +4,12 @@ import { FacebookIcon, InstagramIcon, TwitterIcon, YoutubeIcon } from './SocialI
 
 const CATEGORIES = [
   { label: 'Home', to: '/' },
-  { label: 'Entertainment', to: '/category/ents' },
-  { label: 'Health', to: '/category/science' },
-  { label: 'Knowledge', to: '/category/ubwenge' },
-  { label: 'Others', to: '/category/ibindi' },
+  { label: 'Entertainment', to: '/category/entertainment' },
+  { label: 'Politics', to: '/category/politics' },
+  { label: 'Health', to: '/category/health' },
+  { label: 'Sports', to: '/category/sports' },
+  { label: 'Markets', to: '/category/markets' },
+  { label: 'Opinion', to: '/category/opinion' },
 ];
 
 const SOCIAL = [

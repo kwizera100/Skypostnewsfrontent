@@ -133,9 +133,9 @@ export default function Header() {
               href={ad.linkUrl || '#'}
               target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className={`block border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
-                ad.position === 'right' ? 'flex items-center justify-center' : ''
-              }`}
+              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
+                ad.position === 'center' ? 'block' : 'hidden sm:block'
+              } ${ad.position === 'right' ? 'sm:flex items-center justify-center' : ''}`}
               style={{ minHeight: 80 }}
             >
               {ad.position === 'right' && (!ad.imageUrl || ad.imageUrl.includes('ad-right')) ? (
@@ -169,11 +169,11 @@ export default function Header() {
               autoFocus
               value={searchQ}
               onChange={e => setSearchQ(e.target.value)}
-              placeholder="Shakisha amakuru…"
+              placeholder="Search news…"
               className="flex-1 border-2 border-sky-400 rounded-sm px-3 py-2 text-sm outline-none"
             />
             <button type="submit" className="bg-sky-500 text-white px-4 py-2 rounded-sm text-sm font-semibold hover:bg-sky-600 transition-colors">
-              Shakisha
+              Search
             </button>
             <button type="button" onClick={() => setSearchOpen(false)} className="text-gray-500 hover:text-gray-700 text-sm px-2">
               Close
@@ -194,8 +194,8 @@ export default function Header() {
               <img
                 src="/logo-bird.png"
                 alt="Sky Post News"
-                onError={e => { e.currentTarget.src = '/logo-rect.jpg'; }}
-                className="h-10 sm:h-14 w-auto object-contain flex-shrink-0"
+                onError={e => { e.currentTarget.src = '/logo-square.jpg'; }}
+                className="h-12 sm:h-16 w-auto object-contain flex-shrink-0"
                 style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.3))' }}
               />
               <div className="flex items-baseline gap-1 min-w-0">

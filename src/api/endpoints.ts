@@ -34,6 +34,12 @@ export const categoriesApi = {
 
   getBySlug: (slug: string) =>
     apiClient.get<Category>(`/categories/${slug}`),
+
+  create: (data: { name: string; slug: string; description?: string; color?: string }) =>
+    apiClient.post<Category>('/categories', data),
+
+  delete: (id: number) =>
+    apiClient.delete(`/categories/${id}`),
 };
 
 export interface SiteSettings {
