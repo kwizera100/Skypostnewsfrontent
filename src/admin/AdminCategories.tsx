@@ -25,6 +25,7 @@ export default function AdminCategories() {
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('#0ea5e9');
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -44,7 +45,23 @@ export default function AdminCategories() {
 
   const handleNameChange = (val: string) => {
     setName(val);
-    setSlug(slugify(val));
+    if (!editingId) setSlug(slugify(val));
+  };
+
+  const resetForm = () => {
+    setName('');
+    setSlug('');
+    setDescription('');
+    setColor('#0ea5e9');
+    setEditingId(null);
+  };
+
+  const startEdit = (cat: Category) => {
+    setEditingId(cat.id);
+    setName(cat.name);
+    setSlug(cat.slug);
+    setDescription(cat.description || '');
+    setColor(cat.color);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,15 +72,18 @@ export default function AdminCategories() {
     }
     setSaving(true);
     try {
-      await categoriesApi.create({ name: name.trim(), slug: slug.trim(), description: description.trim() || undefined, color });
-      toast.success('Category created');
-      setName('');
-      setSlug('');
-      setDescription('');
-      setColor('#0ea5e9');
+      const payload = { name: name.trim(), slug: slug.trim(), description: description.trim() || undefined, color };
+      if (editingId) {
+        await categoriesApi.update(editingId, payload);
+        toast.success('Category updated');
+      } else {
+        await categoriesApi.create(payload);
+        toast.success('Category created');
+      }
+      resetForm();
       await fetchCategories();
     } catch (err: any) {
-      const msg = err?.response?.data?.error || 'Failed to create category';
+      const msg = err?.response?.data?.error || `Failed to ${editingId ? 'update' : 'create'} category`;
       toast.error(msg);
     } finally {
       setSaving(false);
@@ -88,7 +108,7 @@ export default function AdminCategories() {
 
       {/* Create form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 space-y-3 max-w-xl">
-        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Add New Category</h2>
+        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">{editingId ? 'Edit Category' : 'Add New Category'}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">Name</label>
@@ -149,8 +169,17 @@ export default function AdminCategories() {
             disabled={saving}
             className="bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold px-4 py-2 rounded transition-colors disabled:opacity-50"
           >
-            {saving ? 'Saving…' : 'Create Category'}
+            {saving ? 'Saving…' : (editingId ? 'Update Category' : 'Create Category')}
           </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="text-gray-500 hover:text-gray-700 text-sm font-medium px-3 py-2"
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
 
@@ -185,7 +214,13 @@ export default function AdminCategories() {
                     <span className="text-gray-500 text-xs">{cat.color}</span>
                   </td>
                   <td className="px-4 py-3 text-gray-600">{cat._count?.articles ?? 0}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-right space-x-2">
+                    <button
+                      onClick={() => startEdit(cat)}
+                      className="text-sky-600 hover:text-sky-800 text-xs font-semibold"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => handleDelete(cat.id)}
                       className="text-red-500 hover:text-red-700 text-xs font-semibold"

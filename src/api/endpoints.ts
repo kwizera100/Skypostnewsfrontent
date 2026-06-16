@@ -38,6 +38,9 @@ export const categoriesApi = {
   create: (data: { name: string; slug: string; description?: string; color?: string }) =>
     apiClient.post<Category>('/categories', data),
 
+  update: (id: number, data: { name: string; slug: string; description?: string; color?: string }) =>
+    apiClient.put<Category>(`/categories/${id}`, data),
+
   delete: (id: number) =>
     apiClient.delete(`/categories/${id}`),
 };
