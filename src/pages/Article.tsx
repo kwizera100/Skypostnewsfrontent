@@ -138,13 +138,7 @@ export default function ArticlePage() {
 
         {/* Article body */}
         <div
-          className="px-6 py-6 prose prose-lg max-w-none text-gray-800 leading-relaxed
-            prose-headings:font-bold prose-headings:text-gray-900
-            prose-a:text-sky-600 prose-a:no-underline hover:prose-a:underline
-            prose-p:my-6 prose-p:leading-8 prose-p:text-base
-            prose-img:my-8 prose-img:rounded-xl prose-img:shadow-lg
-            prose-ul:my-6 prose-ol:my-6 prose-li:my-2
-            prose-blockquote:my-6 prose-blockquote:border-l-4 prose-blockquote:border-orange-500 prose-blockquote:pl-4 prose-blockquote:italic"
+          className="article-body px-6 py-6 max-w-none"
           dangerouslySetInnerHTML={{ __html: fixContentImages(article.content) }}
         />
       </article>

@@ -30,4 +30,35 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+// Many admin pages call the GLOBAL axios instance directly. Make sure those
+// requests also carry the latest token from storage.
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('skypostnews_token');
+  if (token && config.headers && !config.headers.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// When the backend rejects the token (expired or signed with an old secret),
+// clear the stale credentials and bounce the admin back to the login screen so
+// a fresh, valid token is issued. Public pages are unaffected.
+function handleAuthError(error: any) {
+  const status = error?.response?.status;
+  if (status === 401) {
+    const hadToken = localStorage.getItem('skypostnews_token');
+    if (hadToken) {
+      localStorage.removeItem('skypostnews_token');
+      localStorage.removeItem('skypostnews_user');
+      if (window.location.pathname.startsWith('/admin')) {
+        window.location.href = '/admin';
+      }
+    }
+  }
+  return Promise.reject(error);
+}
+
+apiClient.interceptors.response.use((r) => r, handleAuthError);
+axios.interceptors.response.use((r) => r, handleAuthError);
+
 export default apiClient;
