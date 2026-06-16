@@ -15,6 +15,7 @@ import AdminArticleEditor from './admin/AdminArticleEditor';
 import AdminUsers from './admin/AdminUsers';
 import AdminMedia from './admin/AdminMedia';
 import AdminAds from './admin/AdminAds';
+import AdminCategories from './admin/AdminCategories';
 
 function AdminApp() {
   const { user, loading } = useAdminAuth();
@@ -28,6 +29,7 @@ function AdminApp() {
         <Route path="articles/new" element={<AdminArticleEditor />} />
         <Route path="articles/:id/edit" element={<AdminArticleEditor />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="categories" element={<AdminCategories />} />
         <Route path="media" element={<AdminMedia />} />
         <Route path="ads" element={<AdminAds />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />

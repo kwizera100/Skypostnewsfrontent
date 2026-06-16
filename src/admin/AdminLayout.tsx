@@ -28,9 +28,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-700">
           <svg width="32" height="32" viewBox="0 0 80 80" className="flex-shrink-0">
             <circle cx="40" cy="40" r="39" fill="#111" />
-            <circle cx="40" cy="40" r="32" fill="none" stroke="#e05c1a" strokeWidth="5" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#0ea5e9" strokeWidth="5" />
             <circle cx="40" cy="40" r="14" fill="white" />
-            <text x="40" y="47" textAnchor="middle" fill="#e05c1a" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
+            <text x="40" y="47" textAnchor="middle" fill="#0ea5e9" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
           </svg>
           <div>
             <div className="text-white font-black text-sm tracking-tight">SKY POST NEWS</div>
@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Link key={to} to={to} onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-colors
                   ${active ? 'text-white' : 'text-gray-400 hover:text-white hover:bg-gray-800'}`}
-                style={active ? { backgroundColor: '#e05c1a' } : {}}>
+                style={active ? { backgroundColor: '#0ea5e9' } : {}}>
                 <span className="text-base">{icon}</span>
                 {label}
               </Link>
@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         {/* User info + logout */}
         <div className="px-3 py-4 border-t border-gray-700">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 rounded-full bg-sky-600 flex items-center justify-center text-white text-xs font-bold">
               {user?.name?.charAt(0) ?? 'A'}
             </div>
             <div className="min-w-0">
@@ -95,7 +95,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               Sky Post News Admin
             </span>
           </div>
-          <Link to="/" className="text-xs text-orange-600 hover:text-orange-700 font-semibold">
+          <Link to="/" className="text-xs text-sky-600 hover:text-sky-700 font-semibold">
             View Live Site ↗
           </Link>
         </header>
