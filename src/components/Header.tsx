@@ -182,35 +182,35 @@ export default function Header() {
         </div>
       )}
 
-      {/* ── LOGO BANNER (desktop only) ────────────────────────── */}
-      <div className="hidden sm:block bg-white px-4 py-2 sm:py-3">
+      {/* ── LOGO BANNER (all screens) ─────────────────────────── */}
+      <div className="bg-white px-2 sm:px-4 py-2 sm:py-3">
         <div className="max-w-7xl mx-auto">
           <div
-            className="flex items-stretch overflow-hidden rounded-sm shadow-sm"
+            className="flex items-stretch overflow-hidden rounded-md shadow-sm"
             style={{ background: 'linear-gradient(120deg, #38bdf8 0%, #0284c7 55%, #075985 100%)' }}
           >
             {/* Left: Bird logo + Sky Post NEWS */}
-            <Link to="/" className="flex-1 flex items-center gap-3 px-4 sm:px-6 py-2 sm:py-3 min-w-0">
+            <Link to="/" className="flex-1 flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 min-w-0">
               <img
                 src="/logo-bird.png"
                 alt="Sky Post News"
                 onError={e => { e.currentTarget.src = '/logo-square.jpg'; }}
-                className="h-12 sm:h-16 w-auto object-contain flex-shrink-0"
+                className="h-10 sm:h-16 w-auto object-contain flex-shrink-0"
                 style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.3))' }}
               />
               <div className="flex items-baseline gap-1 min-w-0">
                 <span
                   className="font-black text-white leading-none truncate"
                   style={{
-                    fontSize: 'clamp(1.5rem, 4vw, 2.8rem)',
-                    letterSpacing: '1px',
+                    fontSize: 'clamp(1.35rem, 6vw, 2.8rem)',
+                    letterSpacing: '0.5px',
                     textShadow: '1px 1px 3px rgba(0,0,0,0.3)',
                   }}
                 >
                   Sky Post
                 </span>
                 <span
-                  className="font-black text-white px-1.5 py-0.5 rounded-sm text-xs sm:text-sm flex-shrink-0"
+                  className="font-black text-white px-1.5 py-0.5 rounded-sm text-[10px] sm:text-sm flex-shrink-0"
                   style={{ backgroundColor: '#0ea5e9', letterSpacing: '2px' }}
                 >
                   NEWS
@@ -220,10 +220,10 @@ export default function Header() {
 
             {/* Right: News and Magazine */}
             <div
-              className="flex items-center px-4 sm:px-8 lg:px-12"
-              style={{ backgroundColor: '#161616', clipPath: 'polygon(10% 0, 100% 0, 100% 100%, 0 100%)' }}
+              className="flex items-center px-3 sm:px-8 lg:px-12 flex-shrink-0"
+              style={{ backgroundColor: '#161616', clipPath: 'polygon(18% 0, 100% 0, 100% 100%, 0 100%)' }}
             >
-              <span className="text-white font-bold text-sm sm:text-lg lg:text-xl whitespace-nowrap pl-2 sm:pl-4">
+              <span className="text-white font-bold text-[11px] leading-tight sm:text-lg lg:text-xl pl-2 sm:pl-4 text-right sm:whitespace-nowrap">
                 News and Magazine
               </span>
             </div>

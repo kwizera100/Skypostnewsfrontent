@@ -17,7 +17,7 @@ export default function BreakingNewsTicker() {
   const items = [...articles, ...articles];
 
   return (
-    <div className="bg-white border-b border-gray-200 overflow-hidden">
+    <div className="hidden sm:block bg-white border-b border-gray-200 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 flex items-stretch h-9">
         <div className="flex-shrink-0 text-white text-xs font-black uppercase px-4 flex items-center whitespace-nowrap tracking-wider"
           style={{ backgroundColor: '#e05c1a' }}>
