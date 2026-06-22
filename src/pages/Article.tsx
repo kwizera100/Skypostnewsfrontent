@@ -90,21 +90,29 @@ export default function ArticlePage() {
           </Link>
         </div>
 
-        {/* Header */}
-        <div className="px-6 pt-3 pb-4">
+        {/* Title */}
+        <div className="px-6 pt-3 pb-3">
           <Link to={`/category/${article.category.slug}`}>
             <span className={`category-badge ${badgeColor} mb-3`}>
               {article.category.name}
             </span>
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mt-2">
+          <h1 className="text-2xl md:text-3xl font-normal text-gray-900 leading-tight mt-2">
             {article.title}
           </h1>
-          <p className="text-gray-500 text-base mt-2 leading-relaxed italic">
-            {article.excerpt}
-          </p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500 border-t border-b border-gray-100 py-3">
+        {/* Featured image (responsive) */}
+        <img
+          src={getImageSrc(article.imageUrl || article.thumbnailUrl)}
+          alt={article.title}
+          onError={onImgError}
+          className="w-full h-auto max-h-[260px] sm:max-h-[460px] object-cover"
+        />
+
+        {/* Author, date, time, Sky AI + lead */}
+        <div className="px-6 pt-4">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 border-b border-gray-100 pb-3">
             <span className="flex items-center gap-1 font-medium text-gray-700">
               <User size={14} className="text-sky-600" />
               {article.author.name}
@@ -119,6 +127,10 @@ export default function ArticlePage() {
               <Clock size={14} />
               {article.readTime} min read
             </span>
+            <span className="flex items-center gap-1 font-semibold text-sky-600 bg-sky-50 px-2 py-1 rounded-full">
+              <Sparkles size={14} />
+              Sky AI
+            </span>
             {token && (
               <span className="flex items-center gap-1 font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
                 <Eye size={14} />
@@ -126,15 +138,10 @@ export default function ArticlePage() {
               </span>
             )}
           </div>
+          <p className="text-gray-700 text-base sm:text-lg mt-4 leading-relaxed italic font-bold">
+            {article.excerpt}
+          </p>
         </div>
-
-        {/* Featured image */}
-        <img
-          src={getImageSrc(article.imageUrl || article.thumbnailUrl)}
-          alt={article.title}
-          onError={onImgError}
-          className="w-full max-h-[500px] object-cover"
-        />
 
         {/* Article body */}
         <div
