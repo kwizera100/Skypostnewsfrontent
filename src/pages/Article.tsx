@@ -127,10 +127,19 @@ export default function ArticlePage() {
               <Clock size={14} />
               {article.readTime} min read
             </span>
-            <span className="flex items-center gap-1 font-semibold text-sky-600 bg-sky-50 px-2 py-1 rounded-full">
-              <Sparkles size={14} />
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('skyai:open'))}
+              className="flex items-center gap-1.5 font-semibold text-sky-600 bg-sky-50 hover:bg-sky-100 px-2 py-1 rounded-full transition-colors cursor-pointer"
+              title="Ask Sky AI about this article"
+            >
+              <img
+                src="/logo-bird.png"
+                alt="Sky AI"
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                className="h-4 w-auto object-contain"
+              />
               Sky AI
-            </span>
+            </button>
             {token && (
               <span className="flex items-center gap-1 font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
                 <Eye size={14} />

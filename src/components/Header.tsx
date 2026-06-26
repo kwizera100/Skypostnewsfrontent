@@ -83,7 +83,10 @@ export default function Header() {
       createdAt: '',
       updatedAt: '',
     } as AdBanner;
-  });
+  })
+    // Only render slots that have a real uploaded banner; keep the right slot
+    // so the default "Advertise with us" box always shows.
+    .filter(ad => ad.id > 0 || ad.position === 'right');
 
   return (
     <header>
@@ -133,9 +136,9 @@ export default function Header() {
               href={ad.linkUrl || '#'}
               target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
-                ad.position === 'center' ? 'block' : 'hidden sm:block'
-              } ${ad.position === 'right' ? 'sm:flex items-center justify-center' : ''}`}
+              className={`block border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
+                ad.position === 'right' ? 'sm:flex items-center justify-center' : ''
+              }`}
               style={{ minHeight: 80 }}
             >
               {ad.position === 'right' && (!ad.imageUrl || ad.imageUrl.includes('ad-right')) ? (

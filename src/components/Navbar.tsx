@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu, X } from 'lucide-react';
 
 // Fixed English navigation matching the Sky Post News design.
 const NAV_ITEMS: { label: string; to: string }[] = [
@@ -56,37 +56,36 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile toggle */}
-        <div className="md:hidden flex items-center justify-between py-2.5">
-          <Link to="/" className="flex items-center" aria-label="Home">
-            <img src="/logo-bird.png" alt="Sky Post News" onError={e => { e.currentTarget.src = '/logo-rect.jpg'; }} className="h-8 w-auto object-contain mix-blend-multiply" />
-          </Link>
+        {/* Mobile: Browse Categories menu */}
+        <div className="md:hidden">
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex flex-col gap-1.5 p-1.5 text-gray-700"
-            aria-label="Menu">
-            <span className={`block w-5 h-0.5 bg-current transition-transform ${mobileOpen ? 'translate-y-2 rotate-45' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-current transition-opacity ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-current transition-transform ${mobileOpen ? '-translate-y-2 -rotate-45' : ''}`} />
+            className="w-full flex items-center justify-between py-3 px-1 text-gray-800"
+            aria-label="Browse categories"
+            aria-expanded={mobileOpen}>
+            <span className="flex items-center gap-2 font-bold uppercase tracking-wide text-sm">
+              {mobileOpen ? <X size={18} className="text-sky-600" /> : <Menu size={18} className="text-sky-600" />}
+              Browse Categories
+            </span>
+            <ChevronDown size={16} className={`transition-transform ${mobileOpen ? 'rotate-180' : ''}`} />
           </button>
-        </div>
 
-        {/* Mobile dropdown */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 pb-3">
-            {navItems.map(({ label, to }) => (
-              <Link
-                key={to}
-                to={to}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-2 py-2.5 text-sm font-semibold border-b border-gray-50 last:border-0
-                  ${isActive(to) ? 'text-sky-600 bg-sky-50' : 'text-gray-700 hover:bg-gray-50'}`}
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        )}
+          {mobileOpen && (
+            <div className="grid grid-cols-2 gap-px bg-gray-100 border-t border-gray-100 mb-2 rounded-b-md overflow-hidden">
+              {navItems.map(({ label, to }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block px-4 py-3 text-sm font-semibold bg-white transition-colors
+                    ${isActive(to) ? 'text-sky-600 bg-sky-50' : 'text-gray-700 hover:bg-sky-50 hover:text-sky-600'}`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

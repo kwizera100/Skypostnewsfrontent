@@ -105,8 +105,14 @@ export default function Sidebar() {
         </div>
         <div className="sidebar-widget-body text-sm text-gray-600 leading-relaxed">
           <p>
-            Our goal is to provide accurate, unbiased news in a timely manner. We believe that access to truthful information is vital for making informed decisions.
+            Sky Post News is Rwanda&rsquo;s premier digital-first multimedia news network,
+            operated under IREMEE LTD in Nyarugenge, Kigali. Guided by our philosophy
+            <em> &ldquo;Your Voice, Your News,&rdquo;</em> we deliver trusted journalism and
+            dynamic multimedia storytelling.
           </p>
+          <Link to="/about" className="inline-block mt-2 text-sky-700 hover:underline font-semibold text-xs uppercase tracking-wide">
+            Read more &rarr;
+          </Link>
         </div>
       </div>
     </aside>

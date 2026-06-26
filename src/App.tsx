@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import HomePage from './pages/Home';
 import CategoryPage from './pages/Category';
 import ArticlePage from './pages/Article';
+import AboutPage from './pages/About';
 import NotFoundPage from './pages/NotFound';
 import { AdminAuthProvider, useAdminAuth } from './admin/AdminAuth';
 import AdminLogin from './admin/AdminLogin';
@@ -46,6 +47,7 @@ export default function App() {
         <Route path='/' element={<MaintenanceGate><Layout><HomePage /></Layout></MaintenanceGate>} />
         <Route path='/category/:slug' element={<MaintenanceGate><Layout><CategoryPage /></Layout></MaintenanceGate>} />
         <Route path='/article/:slug' element={<MaintenanceGate><Layout><ArticlePage /></Layout></MaintenanceGate>} />
+        <Route path='/about' element={<MaintenanceGate><Layout><AboutPage /></Layout></MaintenanceGate>} />
         <Route path='/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
         <Route path='*' element={<MaintenanceGate><Layout><NotFoundPage /></Layout></MaintenanceGate>} />
       </Routes>

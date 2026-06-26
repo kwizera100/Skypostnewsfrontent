@@ -16,6 +16,12 @@ export default function AIChat() {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
+  useEffect(() => {
+    const handler = () => setIsOpen(true);
+    window.addEventListener('skyai:open', handler);
+    return () => window.removeEventListener('skyai:open', handler);
+  }, []);
+
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!input.trim() || loading) return;
