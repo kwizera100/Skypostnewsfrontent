@@ -193,8 +193,7 @@ export default function Header() {
       <div className="bg-white px-2 sm:px-4 py-2 sm:py-3">
         <div className="max-w-7xl mx-auto">
           <div
-            className="flex items-stretch overflow-hidden rounded-md shadow-sm"
-            style={{ background: 'linear-gradient(120deg, #38bdf8 0%, #0284c7 55%, #075985 100%)' }}
+            className="flex items-stretch overflow-hidden rounded-md shadow-sm bg-white"
           >
             {/* Left: Bird logo + Sky Post NEWS */}
             <Link to="/" className="flex-1 flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 min-w-0">
@@ -203,15 +202,13 @@ export default function Header() {
                 alt="Sky Post News"
                 onError={e => { e.currentTarget.src = '/logo-square.jpg'; }}
                 className="h-10 sm:h-16 w-auto object-contain flex-shrink-0"
-                style={{ filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.3))' }}
               />
               <div className="flex items-baseline gap-1 min-w-0">
                 <span
-                  className="font-black text-white leading-none truncate"
+                  className="font-black text-sky-700 leading-none truncate"
                   style={{
                     fontSize: 'clamp(1.35rem, 6vw, 2.8rem)',
                     letterSpacing: '0.5px',
-                    textShadow: '1px 1px 3px rgba(0,0,0,0.3)',
                   }}
                 >
                   Sky Post

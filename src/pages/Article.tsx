@@ -24,19 +24,30 @@ export default function ArticlePage() {
 
   const updateMeta = useCallback((art: Article) => {
     document.title = `${art.title} | Sky Post News`;
-    const setMeta = (prop: string, content: string) => {
+    const setMetaProp = (prop: string, content: string) => {
       let el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement | null;
       if (!el) { el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
       el.content = content;
     };
+    const setMetaName = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+      if (!el) { el = document.createElement('meta'); el.setAttribute('name', name); document.head.appendChild(el); }
+      el.content = content;
+    };
     const desc = art.excerpt || 'Read the full article on Sky Post News.';
-    const img = typeof window !== 'undefined' ? window.location.origin + getImageSrc(art.imageUrl || art.thumbnailUrl) : getImageSrc(art.imageUrl || art.thumbnailUrl);
-    const url = typeof window !== 'undefined' ? window.location.href : '';
-    setMeta('og:title', art.title);
-    setMeta('og:description', desc);
-    setMeta('og:image', img);
-    setMeta('og:url', url);
-    setMeta('og:type', 'article');
+    const rawImg = getImageSrc(art.imageUrl || art.thumbnailUrl);
+    const img = rawImg.startsWith('http') ? rawImg : `${window.location.origin}${rawImg}`;
+    const url = window.location.href;
+
+    setMetaProp('og:title', art.title);
+    setMetaProp('og:description', desc);
+    setMetaProp('og:image', img);
+    setMetaProp('og:url', url);
+    setMetaProp('og:type', 'article');
+
+    setMetaName('twitter:title', art.title);
+    setMetaName('twitter:description', desc);
+    setMetaName('twitter:image', img);
   }, []);
 
   useEffect(() => {

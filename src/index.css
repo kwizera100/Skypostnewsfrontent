@@ -176,10 +176,27 @@
 .article-body a:hover { text-decoration: underline; }
 .article-body img,
 .article-body figure {
+  display: block;
   margin: 1.8em auto;
   border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 100%;
+  max-height: 520px;
+  object-fit: contain;
 }
-.article-body figure img { margin: 0; }
+.article-body figure img {
+  margin: 0;
+  box-shadow: none;
+  max-height: none;
+}
+.article-body img:first-child {
+  margin-top: 0.5em;
+}
+.article-body p + img,
+.article-body h2 + img,
+.article-body h3 + img {
+  margin-top: 1.2em;
+}
 .article-body figcaption {
   text-align: center;
   font-size: 0.875rem;
