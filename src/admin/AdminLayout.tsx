@@ -26,12 +26,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         {/* Logo */}
         <div className="flex items-center gap-2 px-4 py-4 border-b border-gray-700">
-          <svg width="32" height="32" viewBox="0 0 80 80" className="flex-shrink-0">
-            <circle cx="40" cy="40" r="39" fill="#111" />
-            <circle cx="40" cy="40" r="32" fill="none" stroke="#0ea5e9" strokeWidth="5" />
-            <circle cx="40" cy="40" r="14" fill="white" />
-            <text x="40" y="47" textAnchor="middle" fill="#0ea5e9" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
-          </svg>
+          <img src="/logo-bird.png" alt="Sky Post News" className="h-8 w-auto flex-shrink-0" />
           <div>
             <div className="text-white font-black text-sm tracking-tight">SKY POST NEWS</div>
             <div className="text-gray-500 text-xs">Admin Panel</div>

@@ -26,12 +26,7 @@ export default function AdminLogin() {
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-sm">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <svg width="56" height="56" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r="39" fill="#1a1a1a" />
-            <circle cx="40" cy="40" r="32" fill="none" stroke="#e05c1a" strokeWidth="5" />
-            <circle cx="40" cy="40" r="14" fill="white" />
-            <text x="40" y="47" textAnchor="middle" fill="#e05c1a" fontSize="18" fontWeight="bold" fontFamily="Georgia, serif">i</text>
-          </svg>
+          <img src="/logo-bird.png" alt="Sky Post News" className="h-14 w-auto" />
           <h1 className="text-2xl font-black mt-3 text-gray-900">Sky Post News Admin</h1>
           <p className="text-xs text-gray-400 mt-1">Sign in to manage your news portal</p>
         </div>

@@ -196,11 +196,10 @@ export default function Header() {
             className="flex items-stretch overflow-hidden rounded-md shadow-sm bg-white"
           >
             {/* Left: Bird logo + Sky Post NEWS */}
-            <Link to="/" className="flex-1 flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 min-w-0">
+            <Link to="/" className="flex-1 flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 min-w-0">
               <img
                 src="/logo-bird.png"
                 alt="Sky Post News"
-                onError={e => { e.currentTarget.src = '/logo-square.jpg'; }}
                 className="h-10 sm:h-16 w-auto object-contain flex-shrink-0"
               />
               <div className="flex items-baseline gap-1 min-w-0">

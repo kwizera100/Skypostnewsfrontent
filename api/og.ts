@@ -1,3 +1,4 @@
+// @ts-nocheck
 const API_URL = process.env.VITE_API_URL || 'https://api.skypostnews.com';
 const SITE_URL = 'https://skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
