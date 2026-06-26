@@ -136,12 +136,8 @@ export default function Header() {
               href={ad.linkUrl || '#'}
               target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
-                ad.position === 'right'
-                  ? 'hidden sm:flex items-center justify-center'
-                  : ad.position === 'center'
-                    ? 'block'
-                    : 'hidden sm:block'
+              className={`block border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
+                ad.position === 'right' ? 'sm:flex items-center justify-center' : ''
               }`}
               style={{ minHeight: 80 }}
             >
