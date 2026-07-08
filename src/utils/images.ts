@@ -76,3 +76,25 @@ export function fixContentImages(html: string): string {
   return fixedWayback.replace(/<figure/g, '<figure class="news-figure my-6"')
                      .replace(/<figcaption/g, '<figcaption class="text-center text-xs text-gray-500 mt-2 italic"');
 }
+
+/**
+ * Insert a sponsored ad block after the 3rd closing </p> tag.
+ * If fewer than 3 paragraphs exist, append it to the end.
+ */
+export function injectSponsoredAd(html: string, adHtml: string): string {
+  const matches = html.match(/<\/p>/gi);
+  if (!matches || matches.length < 3) return html + adHtml;
+
+  let count = 0;
+  let idx = 0;
+  while (count < 3 && idx !== -1) {
+    idx = html.indexOf('</p>', idx);
+    if (idx === -1) break;
+    count++;
+    if (count === 3) {
+      return html.slice(0, idx + 4) + adHtml + html.slice(idx + 4);
+    }
+    idx += 4;
+  }
+  return html + adHtml;
+}

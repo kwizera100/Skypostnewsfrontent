@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, Clock, User, ArrowLeft, TrendingUp, Eye } from 'lucide-react';
 import { articlesApi } from '../api/endpoints';
 import type { Article } from '../types';
-import { getImageSrc, onImgError, fixContentImages } from '../utils/images';
+import { getImageSrc, onImgError, fixContentImages, injectSponsoredAd } from '../utils/images';
 import { useAdminAuth } from '../admin/AdminAuth';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -116,6 +116,15 @@ export default function ArticlePage() {
   }
 
   const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-sky-600 text-white';
+
+  const adHtml = `<div class="my-6 bg-gradient-to-r from-green-900 to-green-800 rounded-xl overflow-hidden shadow-md">
+    <div class="px-4 py-2 bg-green-950/50 text-xs font-bold text-green-100 uppercase tracking-wider">Sponsored Ad</div>
+    <a href="https://www.marchalestate.rw" target="_blank" rel="noopener noreferrer" class="block">
+      <img src="/ads/marchal-real-estate-ad.jpg" alt="Marchal Real Estate - Build, Buy, Sell, Rent" class="w-full h-auto object-cover" onerror="this.style.display='none'" />
+    </a>
+  </div>`;
+
+  const articleContent = injectSponsoredAd(fixContentImages(article.content), adHtml);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -247,7 +256,7 @@ export default function ArticlePage() {
         {/* Article body */}
         <div
           className="article-body px-6 py-6 max-w-none"
-          dangerouslySetInnerHTML={{ __html: fixContentImages(article.content) }}
+          dangerouslySetInnerHTML={{ __html: articleContent }}
         />
       </article>
 
