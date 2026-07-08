@@ -6,6 +6,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/uploads/:path*",
+      "destination": "https://api.skypostnews.com/uploads/:path*"
+    },
+    {
       "source": "/article/:slug",
       "destination": "/api/og?slug=:slug"
     },

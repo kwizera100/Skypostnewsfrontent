@@ -1,6 +1,6 @@
 // @ts-nocheck
 const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.skypostnews.com';
-const SITE_URL = process.env.SITE_URL || 'https://skypostnews.com';
+const SITE_URL = process.env.SITE_URL || 'https://www.skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
 
 // Safe timeout wrapper (AbortSignal.timeout may not exist in all runtimes)
@@ -43,7 +43,7 @@ function resolveImageUrl(url: string | null | undefined): string {
     url = url.replace(/^(https?:\/\/web\.archive\.org\/web\/)(\d+)(\/)/, '$1$2im_$3');
   }
   if (url.startsWith('http')) return url;
-  if (url.startsWith('/uploads/')) return `${API_URL}${url}`;
+  if (url.startsWith('/uploads/')) return `${SITE_URL}${url}`;
   if (url.startsWith('/')) return `${SITE_URL}${url}`;
   return `${SITE_URL}/${url}`;
 }
