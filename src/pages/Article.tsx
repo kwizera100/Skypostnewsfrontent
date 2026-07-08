@@ -44,10 +44,23 @@ export default function ArticlePage() {
     setMetaProp('og:image', img);
     setMetaProp('og:url', url);
     setMetaProp('og:type', 'article');
+    setMetaProp('og:site_name', 'Sky Post News');
+    setMetaProp('og:locale', 'en_US');
 
+    setMetaName('twitter:card', 'summary_large_image');
     setMetaName('twitter:title', art.title);
     setMetaName('twitter:description', desc);
     setMetaName('twitter:image', img);
+
+    if (art.publishedAt) {
+      setMetaProp('article:published_time', new Date(art.publishedAt).toISOString());
+    }
+    if (art.author?.name) {
+      setMetaProp('article:author', art.author.name);
+    }
+    if (art.category?.name) {
+      setMetaProp('article:section', art.category.name);
+    }
   }, []);
 
   useEffect(() => {

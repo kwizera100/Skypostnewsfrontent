@@ -1,44 +1,39 @@
 // @ts-nocheck
-const API_URL = process.env.VITE_API_URL || 'https://api.skypostnews.com';
-const SITE_URL = 'https://skypostnews.com';
+const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.skypostnews.com';
+const SITE_URL = process.env.SITE_URL || 'https://skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
 
-// Inline fallback template (crawlers only need meta tags; browsers get fetched HTML below)
+// Minimal fallback template (crawlers only need meta tags; browsers get production HTML)
 const FALLBACK_TEMPLATE = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/logo-square.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><!--TITLE--></title>
-    <meta name="description" content="<!--DESC-->" />
-    <meta property="og:title" content="<!--OG_TITLE-->" />
-    <meta property="og:description" content="<!--OG_DESC-->" />
-    <meta property="og:image" content="<!--OG_IMAGE-->" />
-    <meta property="og:url" content="<!--OG_URL-->" />
-    <meta property="og:type" content="<!--OG_TYPE-->" />
-    <meta property="og:site_name" content="Sky Post News" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:domain" content="skypostnews.com" />
-    <meta name="twitter:title" content="<!--TW_TITLE-->" />
-    <meta name="twitter:description" content="<!--TW_DESC-->" />
-    <meta name="twitter:image" content="<!--TW_IMAGE-->" />
+    <title>Sky Post News</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <noscript><p>Loading… <a href="/">Go to Sky Post News</a></p></noscript>
   </body>
 </html>`;
 
 // Cache the fetched production index.html (avoids refetching on every request)
 let cachedHtml: string | null = null;
+let cacheTime = 0;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 async function getProductionHtml(): Promise<string> {
-  if (cachedHtml) return cachedHtml;
+  if (cachedHtml && Date.now() - cacheTime < CACHE_TTL) {
+    return cachedHtml;
+  }
   try {
-    const res = await fetch(`${SITE_URL}/index.html`, { cache: 'no-store' });
+    const res = await fetch(`${SITE_URL}/index.html`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
     if (res.ok) {
       cachedHtml = await res.text();
+      cacheTime = Date.now();
       return cachedHtml;
     }
   } catch (err) {
@@ -57,38 +52,97 @@ function escapeHtml(text: string): string {
 
 function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return DEFAULT_IMAGE;
+  // Ensure Wayback Machine URLs use im_ form (raw image, not HTML wrapper)
+  if (/web\.archive\.org\/web\/\d+/.test(url) && !/web\.archive\.org\/web\/\d+im_/.test(url)) {
+    url = url.replace(/^(https?:\/\/web\.archive\.org\/web\/)(\d+)(\/)/, '$1$2im_$3');
+  }
   if (url.startsWith('http')) return url;
   if (url.startsWith('/uploads/')) return `${API_URL}${url}`;
   if (url.startsWith('/')) return `${SITE_URL}${url}`;
   return `${SITE_URL}/${url}`;
 }
 
+// Strip all existing OG, Twitter, and article meta tags from the HTML
+function stripSocialMeta(html: string): string {
+  return html
+    .replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+content="[^"]*"\s+property="og:[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+name="twitter:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+content="[^"]*"\s+name="twitter:[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+property="article:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+content="[^"]*"\s+property="article:[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/gi, '')
+    .replace(/<meta\s+content="[^"]*"\s+name="description"\s*\/?>/gi, '');
+}
+
+// Build all meta tags as a single block
+function buildMetaTags(opts: {
+  title: string; desc: string; ogTitle: string; ogDesc: string;
+  ogImage: string; ogUrl: string; ogType: string;
+  twTitle: string; twDesc: string; twImage: string;
+  publishedTime?: string; author?: string; section?: string;
+}): string {
+  const e = escapeHtml;
+  const tags: string[] = [];
+
+  tags.push(`<meta name="description" content="${e(opts.desc)}" />`);
+  tags.push(`<meta property="og:title" content="${e(opts.ogTitle)}" />`);
+  tags.push(`<meta property="og:description" content="${e(opts.ogDesc)}" />`);
+  tags.push(`<meta property="og:image" content="${e(opts.ogImage)}" />`);
+  tags.push(`<meta property="og:url" content="${e(opts.ogUrl)}" />`);
+  tags.push(`<meta property="og:type" content="${e(opts.ogType)}" />`);
+  tags.push(`<meta property="og:site_name" content="Sky Post News" />`);
+  tags.push(`<meta property="og:locale" content="en_US" />`);
+  tags.push(`<meta name="twitter:card" content="summary_large_image" />`);
+  tags.push(`<meta name="twitter:site" content="@skypost01" />`);
+  tags.push(`<meta name="twitter:domain" content="skypostnews.com" />`);
+  tags.push(`<meta name="twitter:title" content="${e(opts.twTitle)}" />`);
+  tags.push(`<meta name="twitter:description" content="${e(opts.twDesc)}" />`);
+  tags.push(`<meta name="twitter:image" content="${e(opts.twImage)}" />`);
+
+  if (opts.publishedTime) {
+    tags.push(`<meta property="article:published_time" content="${e(opts.publishedTime)}" />`);
+  }
+  if (opts.author) {
+    tags.push(`<meta property="article:author" content="${e(opts.author)}" />`);
+  }
+  if (opts.section) {
+    tags.push(`<meta property="article:section" content="${e(opts.section)}" />`);
+  }
+
+  return tags.map(t => `    ${t}`).join('\n');
+}
+
 function injectMeta(html: string, opts: {
   title: string; desc: string; ogTitle: string; ogDesc: string;
   ogImage: string; ogUrl: string; ogType: string;
   twTitle: string; twDesc: string; twImage: string;
+  publishedTime?: string; author?: string; section?: string;
 }): string {
-  return html
-    .replace(/<title>.*?<\/title>/, `<title>${escapeHtml(opts.title)}</title>`)
-    .replace(/<meta name="description" content=".*?"/, `<meta name="description" content="${escapeHtml(opts.desc)}"`)
-    .replace(/<meta property="og:title" content=".*?"/, `<meta property="og:title" content="${escapeHtml(opts.ogTitle)}"`)
-    .replace(/<meta property="og:description" content=".*?"/, `<meta property="og:description" content="${escapeHtml(opts.ogDesc)}"`)
-    .replace(/<meta property="og:image" content=".*?"/, `<meta property="og:image" content="${escapeHtml(opts.ogImage)}"`)
-    .replace(/<meta property="og:url" content=".*?"/, `<meta property="og:url" content="${escapeHtml(opts.ogUrl)}"`)
-    .replace(/<meta property="og:type" content=".*?"/, `<meta property="og:type" content="${escapeHtml(opts.ogType)}"`)
-    .replace(/<meta name="twitter:title" content=".*?"/, `<meta name="twitter:title" content="${escapeHtml(opts.twTitle)}"`)
-    .replace(/<meta name="twitter:description" content=".*?"/, `<meta name="twitter:description" content="${escapeHtml(opts.twDesc)}"`)
-    .replace(/<meta name="twitter:image" content=".*?"/, `<meta name="twitter:image" content="${escapeHtml(opts.twImage)}"`);
+  // Replace <title>
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(opts.title)}</title>`);
+
+  // Strip ALL existing social/description meta tags to avoid duplicates
+  html = stripSocialMeta(html);
+
+  // Insert fresh meta tags before </head>
+  const metaBlock = buildMetaTags(opts);
+  html = html.replace(/<\/head>/i, `${metaBlock}\n  </head>`);
+
+  return html;
 }
 
 export default async function handler(req: any, res: any) {
   const slug = req.query?.slug as string;
 
+  // Cache: 5 min browser, 10 min CDN
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+
   // Fetch the real production index.html (has correct Vite asset paths)
   let html = await getProductionHtml();
 
   if (!slug || typeof slug !== 'string') {
-    // Default meta for non-article routes (should not normally be reached via this rewrite)
+    // Default meta for non-article routes
     html = injectMeta(html, {
       title: 'Sky Post News - True News Every Day',
       desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
@@ -108,6 +162,7 @@ export default async function handler(req: any, res: any) {
   try {
     const apiRes = await fetch(`${API_URL}/api/articles/${encodeURIComponent(slug)}`, {
       headers: { 'Accept': 'application/json' },
+      signal: AbortSignal.timeout(5000),
     });
 
     if (!apiRes.ok) {
@@ -141,6 +196,9 @@ export default async function handler(req: any, res: any) {
       twTitle: title,
       twDesc: description,
       twImage: imageUrl,
+      publishedTime: article.publishedAt ? new Date(article.publishedAt).toISOString() : undefined,
+      author: article.author?.name,
+      section: article.category?.name,
     });
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
