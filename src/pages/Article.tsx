@@ -117,10 +117,10 @@ export default function ArticlePage() {
 
   const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-sky-600 text-white';
 
-  const adHtml = `<div class="my-6 bg-gradient-to-r from-green-900 to-green-800 rounded-xl overflow-hidden shadow-md">
-    <div class="px-4 py-2 bg-green-950/50 text-xs font-bold text-green-100 uppercase tracking-wider">Sponsored Ad</div>
-    <a href="https://www.marchalestate.rw" target="_blank" rel="noopener noreferrer" class="block">
-      <img src="/ads/marchal-real-estate-ad.jpg" alt="Marchal Real Estate - Build, Buy, Sell, Rent" class="w-full h-auto object-cover" onerror="this.style.display='none'" />
+  const adHtml = `<div class="my-6 rounded-xl overflow-hidden shadow-md border border-gray-200">
+    <div class="px-4 py-2 bg-sky-700 text-xs font-bold text-white uppercase tracking-wider">Sponsored Ad</div>
+    <a href="https://www.ecolehomeyland.org" target="_blank" rel="noopener noreferrer" class="block">
+      <img src="/ads/homey-land-ad.png" alt="Homey Land Childcare / Homey Land International School - Registration is ongoing" class="w-full h-auto object-cover" onerror="this.style.display='none'" />
     </a>
   </div>`;
 
