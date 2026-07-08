@@ -1,4 +1,7 @@
 // @ts-nocheck
+import fs from 'fs';
+import path from 'path';
+
 const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.skypostnews.com';
 const SITE_URL = process.env.SITE_URL || 'https://skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
@@ -28,38 +31,34 @@ const FALLBACK_TEMPLATE = `<!doctype html>
   </body>
 </html>`;
 
-// Cache the fetched production index.html (avoids refetching on every request)
+// Read the built index.html from the filesystem (Vercel bundles it with the serverless function)
 let cachedHtml: string | null = null;
-let cacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-async function getProductionHtml(): Promise<string> {
-  if (cachedHtml && Date.now() - cacheTime < CACHE_TTL) {
-    return cachedHtml;
-  }
-  // Try fetching the built index.html from the current deployment first
-  // VERCEL_URL is automatically provided by Vercel
-  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
-  const fetchTargets = [
-    vercelUrl ? `${vercelUrl}/index.html` : null,
-    `${SITE_URL}/index.html`,
-  ].filter(Boolean) as string[];
+function getProductionHtml(): string {
+  if (cachedHtml) return cachedHtml;
 
-  for (const target of fetchTargets) {
+  // Try multiple paths where the built index.html might be
+  const candidates = [
+    path.join(process.cwd(), 'dist', 'index.html'),
+    path.join(process.cwd(), 'index.html'),
+    path.join(__dirname, '..', 'dist', 'index.html'),
+    path.join(__dirname, '..', 'index.html'),
+  ];
+
+  for (const p of candidates) {
     try {
-      const res = await fetchWithTimeout(target, 3000, { cache: 'no-store' });
-      if (res.ok) {
-        const text = await res.text();
-        if (text && text.includes('<html')) {
-          cachedHtml = text;
-          cacheTime = Date.now();
-          return text;
+      if (fs.existsSync(p)) {
+        const html = fs.readFileSync(p, 'utf-8');
+        if (html && html.includes('<html')) {
+          cachedHtml = html;
+          return html;
         }
       }
     } catch (err) {
-      console.error(`OG: Failed to fetch ${target}:`, err);
+      console.error(`OG: Failed to read ${p}:`, err);
     }
   }
+
   return FALLBACK_TEMPLATE;
 }
 
@@ -160,8 +159,8 @@ export default async function handler(req: any, res: any) {
     // Cache: 5 min browser, 10 min CDN
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
 
-    // Fetch the real production index.html (has correct Vite asset paths)
-    let html = await getProductionHtml();
+    // Read the built index.html (has correct Vite asset paths)
+    let html = getProductionHtml();
 
     if (!slug || typeof slug !== 'string') {
       // Default meta for non-article routes
