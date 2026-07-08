@@ -21,6 +21,15 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
+// Exponential backoff retry helper for transient errors (429, 5xx, network)
+function shouldRetry(error: any): boolean {
+  const status = error?.response?.status;
+  if (status === 429) return true;
+  if (status >= 500 && status < 600) return true;
+  if (!error.response) return true; // network / CORS errors
+  return false;
+}
+
 // Attach JWT token to every request if present
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('skypostnews_token');
@@ -58,7 +67,36 @@ function handleAuthError(error: any) {
   return Promise.reject(error);
 }
 
-apiClient.interceptors.response.use((r) => r, handleAuthError);
-axios.interceptors.response.use((r) => r, handleAuthError);
+apiClient.interceptors.response.use((r) => r, (error) => {
+  if (shouldRetry(error)) {
+    const originalRequest = error.config;
+    if (!originalRequest._retry) {
+      originalRequest._retry = 0;
+    }
+    if (originalRequest._retry < 2) {
+      originalRequest._retry += 1;
+      const delay = 300 * Math.pow(2, originalRequest._retry) + Math.random() * 100;
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(apiClient(originalRequest)), delay);
+      });
+    }
+  }
+  return handleAuthError(error);
+});
+
+axios.interceptors.response.use((r) => r, (error) => {
+  if (shouldRetry(error)) {
+    const originalRequest = error.config;
+    if (!originalRequest._retry) originalRequest._retry = 0;
+    if (originalRequest._retry < 2) {
+      originalRequest._retry += 1;
+      const delay = 300 * Math.pow(2, originalRequest._retry) + Math.random() * 100;
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(axios(originalRequest)), delay);
+      });
+    }
+  }
+  return handleAuthError(error);
+});
 
 export default apiClient;
