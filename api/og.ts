@@ -3,13 +3,24 @@ const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.
 const SITE_URL = process.env.SITE_URL || 'https://skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
 
-// Minimal fallback template (crawlers only need meta tags; browsers get production HTML)
+// Safe timeout wrapper (AbortSignal.timeout may not exist in all runtimes)
+function fetchWithTimeout(url: string, ms: number, opts: Record<string, any> = {}): Promise<Response> {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') {
+    return fetch(url, { ...opts, signal: AbortSignal.timeout(ms) });
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+// Minimal fallback template with meta refresh so browsers redirect to SPA
 const FALLBACK_TEMPLATE = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="/logo-square.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="refresh" content="0;url=/" />
     <title>Sky Post News</title>
   </head>
   <body>
@@ -26,18 +37,28 @@ async function getProductionHtml(): Promise<string> {
   if (cachedHtml && Date.now() - cacheTime < CACHE_TTL) {
     return cachedHtml;
   }
-  try {
-    const res = await fetch(`${SITE_URL}/index.html`, {
-      cache: 'no-store',
-      signal: AbortSignal.timeout(3000),
-    });
-    if (res.ok) {
-      cachedHtml = await res.text();
-      cacheTime = Date.now();
-      return cachedHtml;
+  // Try fetching the built index.html from the current deployment first
+  // VERCEL_URL is automatically provided by Vercel
+  const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
+  const fetchTargets = [
+    vercelUrl ? `${vercelUrl}/index.html` : null,
+    `${SITE_URL}/index.html`,
+  ].filter(Boolean) as string[];
+
+  for (const target of fetchTargets) {
+    try {
+      const res = await fetchWithTimeout(target, 3000, { cache: 'no-store' });
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.includes('<html')) {
+          cachedHtml = text;
+          cacheTime = Date.now();
+          return text;
+        }
+      }
+    } catch (err) {
+      console.error(`OG: Failed to fetch ${target}:`, err);
     }
-  } catch (err) {
-    console.error('OG: Failed to fetch production index.html:', err);
   }
   return FALLBACK_TEMPLATE;
 }
@@ -133,79 +154,84 @@ function injectMeta(html: string, opts: {
 }
 
 export default async function handler(req: any, res: any) {
-  const slug = req.query?.slug as string;
-
-  // Cache: 5 min browser, 10 min CDN
-  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
-
-  // Fetch the real production index.html (has correct Vite asset paths)
-  let html = await getProductionHtml();
-
-  if (!slug || typeof slug !== 'string') {
-    // Default meta for non-article routes
-    html = injectMeta(html, {
-      title: 'Sky Post News - True News Every Day',
-      desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-      ogTitle: 'Sky Post News - True News Every Day',
-      ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-      ogImage: DEFAULT_IMAGE,
-      ogUrl: SITE_URL,
-      ogType: 'website',
-      twTitle: 'Sky Post News - True News Every Day',
-      twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-      twImage: DEFAULT_IMAGE,
-    });
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(200).send(html);
-  }
-
   try {
-    const apiRes = await fetch(`${API_URL}/api/articles/${encodeURIComponent(slug)}`, {
-      headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(5000),
-    });
+    const slug = req.query?.slug as string;
 
-    if (!apiRes.ok) {
-      console.error(`OG: API returned ${apiRes.status} for slug "${slug}"`);
+    // Cache: 5 min browser, 10 min CDN
+    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+
+    // Fetch the real production index.html (has correct Vite asset paths)
+    let html = await getProductionHtml();
+
+    if (!slug || typeof slug !== 'string') {
+      // Default meta for non-article routes
+      html = injectMeta(html, {
+        title: 'Sky Post News - True News Every Day',
+        desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+        ogTitle: 'Sky Post News - True News Every Day',
+        ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+        ogImage: DEFAULT_IMAGE,
+        ogUrl: SITE_URL,
+        ogType: 'website',
+        twTitle: 'Sky Post News - True News Every Day',
+        twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+        twImage: DEFAULT_IMAGE,
+      });
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.status(200).send(html);
     }
 
-    const article = await apiRes.json();
+    try {
+      const apiRes = await fetchWithTimeout(`${API_URL}/api/articles/${encodeURIComponent(slug)}`, 5000, {
+        headers: { 'Accept': 'application/json' },
+      });
 
-    if (!article || !article.id) {
-      console.error(`OG: Article not found or invalid for slug "${slug}"`);
+      if (!apiRes.ok) {
+        console.error(`OG: API returned ${apiRes.status} for slug "${slug}"`);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.status(200).send(html);
+      }
+
+      const article = await apiRes.json();
+
+      if (!article || !article.id) {
+        console.error(`OG: Article not found or invalid for slug "${slug}"`);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.status(200).send(html);
+      }
+
+      const title = article.title || 'Sky Post News';
+      const description = article.excerpt || 'Read the full article on Sky Post News.';
+      const url = `${SITE_URL}/article/${slug}`;
+      const imageUrl = resolveImageUrl(article.imageUrl || article.thumbnailUrl);
+      const fullTitle = `${title} | Sky Post News`;
+
+      html = injectMeta(html, {
+        title: fullTitle,
+        desc: description,
+        ogTitle: title,
+        ogDesc: description,
+        ogImage: imageUrl,
+        ogUrl: url,
+        ogType: 'article',
+        twTitle: title,
+        twDesc: description,
+        twImage: imageUrl,
+        publishedTime: article.publishedAt ? new Date(article.publishedAt).toISOString() : undefined,
+        author: article.author?.name,
+        section: article.category?.name,
+      });
+
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.status(200).send(html);
+      res.status(200).send(html);
+    } catch (error) {
+      console.error('OG handler inner error:', error);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.status(200).send(html);
     }
-
-    const title = article.title || 'Sky Post News';
-    const description = article.excerpt || 'Read the full article on Sky Post News.';
-    const url = `${SITE_URL}/article/${slug}`;
-    const imageUrl = resolveImageUrl(article.imageUrl || article.thumbnailUrl);
-    const fullTitle = `${title} | Sky Post News`;
-
-    html = injectMeta(html, {
-      title: fullTitle,
-      desc: description,
-      ogTitle: title,
-      ogDesc: description,
-      ogImage: imageUrl,
-      ogUrl: url,
-      ogType: 'article',
-      twTitle: title,
-      twDesc: description,
-      twImage: imageUrl,
-      publishedTime: article.publishedAt ? new Date(article.publishedAt).toISOString() : undefined,
-      author: article.author?.name,
-      section: article.category?.name,
-    });
-
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(html);
   } catch (error) {
-    console.error('OG handler error:', error);
+    console.error('OG handler fatal error:', error);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(html);
+    res.status(200).send(FALLBACK_TEMPLATE);
   }
 }
