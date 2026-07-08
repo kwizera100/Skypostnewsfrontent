@@ -1,7 +1,4 @@
 // @ts-nocheck
-import fs from 'fs';
-import path from 'path';
-
 const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.skypostnews.com';
 const SITE_URL = process.env.SITE_URL || 'https://skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
@@ -16,8 +13,8 @@ function fetchWithTimeout(url: string, ms: number, opts: Record<string, any> = {
   return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
 }
 
-// Minimal fallback template with meta refresh so browsers redirect to SPA
-const FALLBACK_TEMPLATE = `<!doctype html>
+// Base template: crawlers read meta tags, browsers redirect to SPA via meta refresh
+const BASE_TEMPLATE = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -30,37 +27,6 @@ const FALLBACK_TEMPLATE = `<!doctype html>
     <noscript><p>Loading… <a href="/">Go to Sky Post News</a></p></noscript>
   </body>
 </html>`;
-
-// Read the built index.html from the filesystem (Vercel bundles it with the serverless function)
-let cachedHtml: string | null = null;
-
-function getProductionHtml(): string {
-  if (cachedHtml) return cachedHtml;
-
-  // Try multiple paths where the built index.html might be
-  const candidates = [
-    path.join(process.cwd(), 'dist', 'index.html'),
-    path.join(process.cwd(), 'index.html'),
-    path.join(__dirname, '..', 'dist', 'index.html'),
-    path.join(__dirname, '..', 'index.html'),
-  ];
-
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p)) {
-        const html = fs.readFileSync(p, 'utf-8');
-        if (html && html.includes('<html')) {
-          cachedHtml = html;
-          return html;
-        }
-      }
-    } catch (err) {
-      console.error(`OG: Failed to read ${p}:`, err);
-    }
-  }
-
-  return FALLBACK_TEMPLATE;
-}
 
 function escapeHtml(text: string): string {
   return text
@@ -159,8 +125,8 @@ export default async function handler(req: any, res: any) {
     // Cache: 5 min browser, 10 min CDN
     res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
 
-    // Read the built index.html (has correct Vite asset paths)
-    let html = getProductionHtml();
+    // Use base template (crawlers get meta tags, browsers redirect to SPA)
+    let html = BASE_TEMPLATE;
 
     if (!slug || typeof slug !== 'string') {
       // Default meta for non-article routes
@@ -231,6 +197,6 @@ export default async function handler(req: any, res: any) {
   } catch (error) {
     console.error('OG handler fatal error:', error);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(FALLBACK_TEMPLATE);
+    res.status(200).send(BASE_TEMPLATE);
   }
 }
