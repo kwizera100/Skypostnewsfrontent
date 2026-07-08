@@ -153,6 +153,18 @@ export default async function handler(req: any, res: any) {
 
       if (!apiRes.ok) {
         console.error(`OG: API returned ${apiRes.status} for slug "${slug}"`);
+        html = injectMeta(html, {
+          title: 'Sky Post News - True News Every Day',
+          desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          ogTitle: 'Sky Post News - True News Every Day',
+          ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          ogImage: DEFAULT_IMAGE,
+          ogUrl: `${SITE_URL}/article/${slug}`,
+          ogType: 'article',
+          twTitle: 'Sky Post News - True News Every Day',
+          twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          twImage: DEFAULT_IMAGE,
+        });
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.status(200).send(html);
       }
@@ -161,6 +173,18 @@ export default async function handler(req: any, res: any) {
 
       if (!article || !article.id) {
         console.error(`OG: Article not found or invalid for slug "${slug}"`);
+        html = injectMeta(html, {
+          title: 'Sky Post News - True News Every Day',
+          desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          ogTitle: 'Sky Post News - True News Every Day',
+          ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          ogImage: DEFAULT_IMAGE,
+          ogUrl: `${SITE_URL}/article/${slug}`,
+          ogType: 'article',
+          twTitle: 'Sky Post News - True News Every Day',
+          twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+          twImage: DEFAULT_IMAGE,
+        });
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.status(200).send(html);
       }
