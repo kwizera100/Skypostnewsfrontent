@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Search, X, Mail } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, TwitterIcon, YoutubeIcon } from './SocialIcons';
 import { adsApi, subscribersApi } from '../api/endpoints';
@@ -46,7 +46,14 @@ function resolveAdImage(url: string): string {
   return url;
 }
 
+const LANG_CONFIG: { code: Language; short: string; flag: string }[] = [
+  { code: 'en', short: 'ENG', flag: '🇬🇧' },
+  { code: 'fr', short: 'FR', flag: '🇫🇷' },
+  { code: 'rw', short: 'KINYA', flag: '🇷🇼' },
+];
+
 export default function Header() {
+  const { pathname } = useLocation();
   const [now, setNow] = useState(new Date());
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQ, setSearchQ] = useState('');
@@ -54,19 +61,13 @@ export default function Header() {
   const [subOpen, setSubOpen] = useState(false);
   const [subEmail, setSubEmail] = useState('');
   const [subLoading, setSubLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const currentLang = getLangFromPath(window.location.pathname);
-  const barePath = stripLangPrefix(window.location.pathname);
-
-  const switchLang = (lang: Language) => {
-    navigate(addLangPrefix(barePath, lang));
-  };
+  const currentLang = getLangFromPath(pathname);
+  const barePath = stripLangPrefix(pathname);
 
   const getLang = () => {
-    const p = window.location.pathname;
-    if (p === '/fr' || p.startsWith('/fr/')) return 'fr';
-    if (p === '/rw' || p.startsWith('/rw/')) return 'rw';
+    if (pathname === '/fr' || pathname.startsWith('/fr/')) return 'fr';
+    if (pathname === '/rw' || pathname.startsWith('/rw/')) return 'rw';
     return 'en';
   };
 
@@ -135,10 +136,7 @@ export default function Header() {
       createdAt: '',
       updatedAt: '',
     } as AdBanner;
-  })
-    // Only render slots that have a real uploaded banner; keep the right slot
-    // so the default "Advertise with us" box always shows.
-    .filter(ad => ad.id > 0 || ad.position === 'right');
+  });
 
   return (
     <header>
@@ -159,20 +157,22 @@ export default function Header() {
           </div>
           {/* Date + Social + ENG/FR/RW + Subscribe + Search */}
           <div className="flex items-center gap-3 ml-auto">
-            {/* Language switcher ENG/FR/RW */}
-            <div className="flex items-center gap-1">
-              {(['en', 'fr', 'rw'] as Language[]).map(l => (
-                <button
-                  key={l}
-                  onClick={() => switchLang(l)}
-                  className={`text-xs font-bold uppercase tracking-wide px-1.5 py-0.5 rounded transition-colors ${
-                    currentLang === l
-                      ? 'bg-sky-600 text-white'
-                      : 'text-gray-400 hover:text-sky-400'
-                  }`}
-                >
-                  {l === 'en' ? 'ENG' : l === 'fr' ? 'FR' : 'RW'}
-                </button>
+            {/* Language switcher ENG/FR/KINYA */}
+            <div className="flex items-center gap-0 flex-shrink-0">
+              {LANG_CONFIG.map((l, i) => (
+                <span key={l.code} className="flex items-center">
+                  {i > 0 && <span className="text-gray-600 text-xs mx-1">|</span>}
+                  <Link
+                    to={addLangPrefix(barePath, l.code)}
+                    title={l.short}
+                    className={`flex items-center gap-1 text-xs font-bold tracking-wide uppercase transition-colors px-1 cursor-pointer ${
+                      currentLang === l.code ? 'text-sky-400' : 'text-gray-400 hover:text-sky-400'
+                    }`}
+                  >
+                    <span className="text-sm leading-none">{l.flag}</span>
+                    <span>{l.short}</span>
+                  </Link>
+                </span>
               ))}
             </div>
             <span className="text-gray-600 text-xs hidden md:block">|</span>
