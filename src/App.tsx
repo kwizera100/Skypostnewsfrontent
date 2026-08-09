@@ -78,8 +78,15 @@ export default function App() {
         <Route path='/rw/*' element={<LangRoutes />} />
         {/* Google OAuth callback */}
         <Route path='/auth/google/callback' element={<GoogleCallback />} />
-        {/* Admin */}
+        {/* Login / Super login (English, French, Kinyarwanda) */}
+        <Route path='/login' element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+        <Route path='/en/login' element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+        <Route path='/fr/login' element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+        <Route path='/rw/login' element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+        {/* Admin (English, French, Kinyarwanda) */}
         <Route path='/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
+        <Route path='/fr/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
+        <Route path='/rw/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
       </Routes>
     </BrowserRouter>
     </ErrorBoundary>

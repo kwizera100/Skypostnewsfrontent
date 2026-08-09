@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuth';
 
 export default function AdminLogin() {
   const { login } = useAdminAuth();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,6 +17,13 @@ export default function AdminLogin() {
     setLoading(true);
     try {
       await login(email, password);
+      // Preserve language prefix after login
+      const adminPath = pathname.startsWith('/fr/')
+        ? '/fr/admin'
+        : pathname.startsWith('/rw/')
+          ? '/rw/admin'
+          : '/admin';
+      navigate(adminPath, { replace: true });
     } catch {
       setError('Invalid email or password');
     } finally {
