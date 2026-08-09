@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import MaintenanceGate from './components/MaintenanceGate';
 import Layout from './components/Layout';
@@ -7,6 +7,8 @@ import CategoryPage from './pages/Category';
 import ArticlePage from './pages/Article';
 import AboutPage from './pages/About';
 import NotFoundPage from './pages/NotFound';
+import GoogleCallback from './pages/GoogleCallback';
+import { LanguageContext, getLangFromPath, type Language } from './i18n';
 import { AdminAuthProvider, useAdminAuth } from './admin/AdminAuth';
 import AdminLogin from './admin/AdminLogin';
 import AdminLayout from './admin/AdminLayout';
@@ -39,17 +41,45 @@ function AdminApp() {
   );
 }
 
+function LangAwareLayout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const lang: Language = getLangFromPath(location.pathname);
+  return (
+    <LanguageContext.Provider value={lang}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+function LangRoutes() {
+  return (
+    <LangAwareLayout>
+      <Routes>
+        <Route path='/' element={<MaintenanceGate><Layout><HomePage /></Layout></MaintenanceGate>} />
+        <Route path='category/:slug' element={<MaintenanceGate><Layout><CategoryPage /></Layout></MaintenanceGate>} />
+        <Route path='article/:slug' element={<MaintenanceGate><Layout><ArticlePage /></Layout></MaintenanceGate>} />
+        <Route path='about' element={<MaintenanceGate><Layout><AboutPage /></Layout></MaintenanceGate>} />
+        <Route path='*' element={<MaintenanceGate><Layout><NotFoundPage /></Layout></MaintenanceGate>} />
+      </Routes>
+    </LangAwareLayout>
+  );
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<MaintenanceGate><Layout><HomePage /></Layout></MaintenanceGate>} />
-        <Route path='/category/:slug' element={<MaintenanceGate><Layout><CategoryPage /></Layout></MaintenanceGate>} />
-        <Route path='/article/:slug' element={<MaintenanceGate><Layout><ArticlePage /></Layout></MaintenanceGate>} />
-        <Route path='/about' element={<MaintenanceGate><Layout><AboutPage /></Layout></MaintenanceGate>} />
+        {/* English (no prefix) */}
+        <Route path='/*' element={<LangRoutes />} />
+        {/* French */}
+        <Route path='/fr/*' element={<LangRoutes />} />
+        {/* Kinyarwanda */}
+        <Route path='/rw/*' element={<LangRoutes />} />
+        {/* Google OAuth callback */}
+        <Route path='/auth/google/callback' element={<GoogleCallback />} />
+        {/* Admin */}
         <Route path='/admin/*' element={<AdminAuthProvider><AdminApp /></AdminAuthProvider>} />
-        <Route path='*' element={<MaintenanceGate><Layout><NotFoundPage /></Layout></MaintenanceGate>} />
       </Routes>
     </BrowserRouter>
     </ErrorBoundary>

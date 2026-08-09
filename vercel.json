@@ -6,6 +6,10 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://api.skypostnews.com/api/:path*"
+    },
+    {
       "source": "/uploads/:path*",
       "destination": "https://api.skypostnews.com/uploads/:path*"
     },
@@ -14,7 +18,7 @@
       "destination": "/api/og?slug=:slug"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!admin|auth).*)",
       "destination": "/index.html"
     }
   ],

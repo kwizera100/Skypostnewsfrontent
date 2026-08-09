@@ -5,6 +5,8 @@ import { articlesApi } from '../api/endpoints';
 import type { Article } from '../types';
 import { getImageSrc, onImgError, fixContentImages, injectSponsoredAd } from '../utils/images';
 import { useAdminAuth } from '../admin/AdminAuth';
+import { useLanguage, addLangPrefix } from '../i18n';
+import { FacebookIcon, InstagramIcon, TwitterIcon } from '../components/SocialIcons';
 
 const CATEGORY_COLORS: Record<string, string> = {
   ents: 'bg-purple-600 text-white',
@@ -16,6 +18,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const { token } = useAdminAuth();
+  const lang = useLanguage();
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -85,7 +88,7 @@ export default function ArticlePage() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, lang]);
 
   if (loading) {
     return (
@@ -133,7 +136,7 @@ export default function ArticlePage() {
         {/* Back link */}
         <div className="px-6 pt-4">
           <Link
-            to={`/category/${article.category.slug}`}
+            to={addLangPrefix(`/category/${article.category.slug}`, lang)}
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-sky-600 transition-colors"
           >
             <ArrowLeft size={14} />
@@ -143,7 +146,7 @@ export default function ArticlePage() {
 
         {/* Title */}
         <div className="px-6 pt-3 pb-3">
-          <Link to={`/category/${article.category.slug}`}>
+          <Link to={addLangPrefix(`/category/${article.category.slug}`, lang)}>
             <span className={`category-badge ${badgeColor} mb-3`}>
               {article.category.name}
             </span>
@@ -258,6 +261,46 @@ export default function ArticlePage() {
           className="article-body px-6 py-6 max-w-none"
           dangerouslySetInnerHTML={{ __html: articleContent }}
         />
+
+        {/* Author Profile Section */}
+        {article.author && (
+          <div className="border-t border-gray-200 px-6 py-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
+              <img
+                src={getImageSrc(article.author.avatarUrl, '/logo-square.jpg')}
+                alt={article.author.name}
+                onError={onImgError}
+                className="w-20 h-20 rounded-full object-cover flex-shrink-0 border-2 border-sky-100"
+              />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold text-gray-900">{article.author.name}</h3>
+                {article.author.bio && (
+                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">{article.author.bio}</p>
+                )}
+                <div className="flex items-center gap-2 mt-3">
+                  {article.author.socialTwitter && (
+                    <a href={article.author.socialTwitter} target="_blank" rel="noopener noreferrer"
+                      aria-label="Twitter" className="text-gray-400 hover:text-sky-500 transition-colors">
+                      <TwitterIcon size={18} />
+                    </a>
+                  )}
+                  {article.author.socialFacebook && (
+                    <a href={article.author.socialFacebook} target="_blank" rel="noopener noreferrer"
+                      aria-label="Facebook" className="text-gray-400 hover:text-sky-500 transition-colors">
+                      <FacebookIcon size={18} />
+                    </a>
+                  )}
+                  {article.author.socialInstagram && (
+                    <a href={article.author.socialInstagram} target="_blank" rel="noopener noreferrer"
+                      aria-label="Instagram" className="text-gray-400 hover:text-sky-500 transition-colors">
+                      <InstagramIcon size={18} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </article>
 
       {/* Sidebar */}
@@ -274,7 +317,7 @@ export default function ArticlePage() {
             {popularArticles.slice(0, 5).map((popularArticle) => (
               <Link
                 key={popularArticle.id}
-                to={`/article/${popularArticle.slug}`}
+                to={addLangPrefix(`/article/${popularArticle.slug}`, lang)}
                 className="flex gap-3 group"
               >
                 <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
@@ -310,7 +353,7 @@ export default function ArticlePage() {
             {mostReadArticles.slice(0, 5).map((mostReadArticle) => (
               <Link
                 key={mostReadArticle.id}
-                to={`/article/${mostReadArticle.slug}`}
+                to={addLangPrefix(`/article/${mostReadArticle.slug}`, lang)}
                 className="flex gap-3 group"
               >
                 <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-100">

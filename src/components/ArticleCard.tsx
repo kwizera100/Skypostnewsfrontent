@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, User } from 'lucide-react';
 import type { Article } from '../types';
 import { getImageSrc, onImgError } from '../utils/images';
+import { useLanguage, addLangPrefix } from '../i18n';
 
 const CATEGORY_COLORS: Record<string, string> = {
   ents: 'bg-purple-600 text-white',
@@ -16,8 +17,11 @@ interface Props {
 }
 
 export default function ArticleCard({ article, variant = 'default' }: Props) {
+  const lang = useLanguage();
   const badgeColor = CATEGORY_COLORS[article.category.slug] ?? 'bg-sky-700 text-white';
   const thumb = getImageSrc(article.thumbnailUrl || article.imageUrl);
+  const artLink = addLangPrefix(`/article/${article.slug}`, lang);
+  const catLink = addLangPrefix(`/category/${article.category.slug}`, lang);
 
   // ── Compact (sidebar list item) ──────────────────────────────────────────
   if (variant === 'compact') {
@@ -33,7 +37,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         </div>
         <div className="flex-1 min-w-0">
           <Link
-            to={`/article/${article.slug}`}
+            to={artLink}
             className="block text-sm font-bold text-gray-800 hover:text-sky-700 line-clamp-2 leading-snug mb-1"
           >
             {article.title}
@@ -61,7 +65,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
             className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
           />
           <Link
-            to={`/category/${article.category.slug}`}
+            to={catLink}
             className={`absolute bottom-1 left-1 category-badge text-xs ${badgeColor}`}
             style={{ fontSize: '9px', padding: '1px 5px' }}
           >
@@ -70,7 +74,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         </div>
         <div className="flex-1 min-w-0">
           <Link
-            to={`/article/${article.slug}`}
+            to={artLink}
             className="block font-bold text-gray-900 hover:text-sky-700 line-clamp-2 text-sm leading-snug mb-1"
           >
             {article.title}
@@ -91,7 +95,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
     return (
       <article className="featusky-card">
         <div className="relative overflow-hidden">
-          <Link to={`/article/${article.slug}`}>
+          <Link to={artLink}>
             <img
               src={thumb}
               alt={article.title}
@@ -104,14 +108,14 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
           </Link>
           {/* Category badge overlaid */}
           <Link
-            to={`/category/${article.category.slug}`}
+            to={catLink}
             className={`absolute top-4 left-4 category-badge ${badgeColor} shadow-md`}
           >
             {article.category.name}
           </Link>
           {/* Title overlaid at bottom */}
           <div className="absolute bottom-0 left-0 right-0 p-5">
-            <Link to={`/article/${article.slug}`}>
+            <Link to={artLink}>
               <h2 className="text-white text-xl sm:text-2xl font-black leading-snug hover:text-sky-300 transition-colors line-clamp-3">
                 {article.title}
               </h2>
@@ -131,7 +135,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         {article.excerpt && (
           <div className="p-4 border-t border-gray-100">
             <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">{article.excerpt}</p>
-            <Link to={`/article/${article.slug}`} className="btn-read-more">
+            <Link to={artLink} className="btn-read-more">
             Read More →
           </Link>
           </div>
@@ -144,7 +148,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
   return (
     <article className="bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
       <div className="relative overflow-hidden">
-        <Link to={`/article/${article.slug}`}>
+        <Link to={artLink}>
           <img
             src={thumb}
             alt={article.title}
@@ -154,7 +158,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
         </Link>
         {/* Category badge overlay */}
         <Link
-          to={`/category/${article.category.slug}`}
+          to={catLink}
           className={`absolute top-3 left-3 category-badge ${badgeColor} shadow`}
         >
           {article.category.name}
@@ -168,7 +172,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
 
       <div className="p-4">
         <Link
-          to={`/article/${article.slug}`}
+          to={artLink}
           className="block text-base font-bold text-gray-900 hover:text-sky-700 transition-colors line-clamp-2 leading-snug mb-2"
         >
           {article.title}
@@ -193,7 +197,7 @@ export default function ArticleCard({ article, variant = 'default' }: Props) {
           </p>
         )}
 
-        <Link to={`/article/${article.slug}`} className="btn-read-more">
+        <Link to={artLink} className="btn-read-more">
           Read More →
         </Link>
       </div>

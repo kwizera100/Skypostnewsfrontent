@@ -15,6 +15,9 @@ export interface Author {
   slug: string;
   bio?: string;
   avatarUrl?: string;
+  socialTwitter?: string;
+  socialFacebook?: string;
+  socialInstagram?: string;
 }
 
 export interface Article {

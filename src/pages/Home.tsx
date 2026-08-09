@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { articlesApi, categoriesApi } from '../api/endpoints';
 import type { Article, Category } from '../types';
 import { getImageSrc, onImgError } from '../utils/images';
+import { useLanguage, addLangPrefix } from '../i18n';
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -18,10 +19,10 @@ function SectionHeading({ label }: { label: string }) {
   );
 }
 
-function ListCard({ article }: { article: Article }) {
+function ListCard({ article, lang }: { article: Article; lang: string }) {
   const img = getImageSrc(article.thumbnailUrl || article.imageUrl);
   return (
-    <Link to={`/article/${article.slug}`}
+    <Link to={addLangPrefix(`/article/${article.slug}`, lang as any)}
       className="flex gap-3 group py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-1 transition-colors">
       <img src={img} alt={article.title} onError={onImgError} className="w-24 h-16 object-cover flex-shrink-0" />
       <div className="flex-1 min-w-0">
@@ -34,10 +35,10 @@ function ListCard({ article }: { article: Article }) {
   );
 }
 
-function GridCard({ article }: { article: Article }) {
+function GridCard({ article, lang }: { article: Article; lang: string }) {
   const img = getImageSrc(article.thumbnailUrl || article.imageUrl);
   return (
-    <Link to={`/article/${article.slug}`} className="group block">
+    <Link to={addLangPrefix(`/article/${article.slug}`, lang as any)} className="group block">
       <div className="overflow-hidden bg-gray-200 aspect-[4/3]">
         <img src={img} alt={article.title} onError={onImgError}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -50,10 +51,10 @@ function GridCard({ article }: { article: Article }) {
   );
 }
 
-function FeaturedCard({ article }: { article: Article }) {
+function FeaturedCard({ article, lang }: { article: Article; lang: string }) {
   const img = getImageSrc(article.thumbnailUrl || article.imageUrl);
   return (
-    <Link to={`/article/${article.slug}`} className="group block relative overflow-hidden bg-gray-900" style={{ aspectRatio: '16/10' }}>
+    <Link to={addLangPrefix(`/article/${article.slug}`, lang as any)} className="group block relative overflow-hidden bg-gray-900" style={{ aspectRatio: '16/10' }}>
       <img src={img} alt={article.title} onError={onImgError}
           className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -95,12 +96,16 @@ function SkeletonList() {
 }
 
 export default function HomePage() {
+  const lang = useLanguage();
   const [articles, setArticles] = useState<Article[]>([]);
   const [catArticles, setCatArticles] = useState<Record<string, Article[]>>({});
   const [topCats, setTopCats] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+    setArticles([]);
+    setCatArticles({});
     articlesApi.getLatest(30)
       .then(res => setArticles(Array.isArray(res.data) ? res.data : []))
       .catch(() => {})
@@ -122,7 +127,7 @@ export default function HomePage() {
           .catch(() => {});
       });
     }).catch(() => {});
-  }, []);
+  }, [lang]);
 
   const featured  = articles[0];
   const topLeft   = articles.slice(1, 3);
@@ -140,21 +145,21 @@ export default function HomePage() {
           <div className="md:col-span-1 flex flex-col gap-4">
             {loading
               ? [0, 1].map(i => <SkeletonGrid key={i} />)
-              : topLeft.map(a => <GridCard key={a.id} article={a} />)
+              : topLeft.map(a => <GridCard key={a.id} article={a} lang={lang} />)
             }
           </div>
 
           <div className="md:col-span-3">
             {loading
               ? <div className="bg-gray-200 animate-pulse" style={{ aspectRatio: '16/10' }} />
-              : featured && <FeaturedCard article={featured} />
+              : featured && <FeaturedCard article={featured} lang={lang} />
             }
           </div>
 
           <div className="md:col-span-1 flex flex-col gap-4">
             {loading
               ? [0, 1].map(i => <SkeletonGrid key={i} />)
-              : topRight.map(a => <GridCard key={a.id} article={a} />)
+              : topRight.map(a => <GridCard key={a.id} article={a} lang={lang} />)
             }
           </div>
         </div>
@@ -162,7 +167,7 @@ export default function HomePage() {
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => <SkeletonList key={i} />)
-            : listItems.map(a => <ListCard key={a.id} article={a} />)
+            : listItems.map(a => <ListCard key={a.id} article={a} lang={lang} />)
           }
         </div>
       </div>
@@ -179,7 +184,7 @@ export default function HomePage() {
                 <span className="w-1 h-6 bg-orange-500 block mr-3" />
                 <h2 className="font-black text-base uppercase tracking-widest text-gray-900">{cat.name}</h2>
               </div>
-              <Link to={`/category/${cat.slug}`}
+              <Link to={addLangPrefix(`/category/${cat.slug}`, lang)}
                 className="text-xs font-semibold text-orange-500 hover:text-orange-700 uppercase tracking-wide border border-orange-300 hover:border-orange-500 px-3 py-1 transition-colors">
                 View All →
               </Link>
@@ -192,11 +197,11 @@ export default function HomePage() {
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 {main && (
                   <div className="md:col-span-5">
-                    <FeaturedCard article={main} />
+                    <FeaturedCard article={main} lang={lang} />
                   </div>
                 )}
                 <div className="md:col-span-7">
-                  {rest.map(a => <ListCard key={a.id} article={a} />)}
+                  {rest.map(a => <ListCard key={a.id} article={a} lang={lang} />)}
                 </div>
               </div>
             )}
@@ -209,7 +214,7 @@ export default function HomePage() {
         <div className="bg-white border-y sm:border border-gray-200 p-3 sm:p-4">
           <SectionHeading label="More News" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {moreItems.map(a => <GridCard key={a.id} article={a} />)}
+            {moreItems.map(a => <GridCard key={a.id} article={a} lang={lang} />)}
           </div>
         </div>
       )}

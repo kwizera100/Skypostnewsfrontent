@@ -4,6 +4,7 @@ import { articlesApi, categoriesApi } from '../api/endpoints';
 import ArticleCard from '../components/ArticleCard';
 import Pagination from '../components/Pagination';
 import type { Article, Category, PaginatedResponse } from '../types';
+import { useLanguage } from '../i18n';
 
 const PAGE_SIZE = 8;
 
@@ -16,6 +17,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const lang = useLanguage();
   const [data, setData] = useState<PaginatedResponse<Article> | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [page, setPage] = useState(1);
@@ -36,7 +38,7 @@ export default function CategoryPage() {
       .then((res) => setData(Array.isArray(res.data?.data) ? res.data : null))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [slug, page]);
+  }, [slug, page, lang]);
 
   const headerColor = CATEGORY_COLORS[slug ?? ''] ?? 'bg-sky-600';
 

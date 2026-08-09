@@ -85,3 +85,17 @@ export const authApi = {
   register: (name: string, email: string, password: string) =>
     apiClient.post('/auth/register', { name, email, password }),
 };
+
+export const subscribersApi = {
+  subscribe: (email: string, language?: string) =>
+    apiClient.post('/subscribers/subscribe', { email, language }),
+
+  googleSignup: (email: string, googleId: string, name?: string, language?: string) =>
+    apiClient.post('/subscribers/google', { email, googleId, name, language }),
+
+  unsubscribe: (email: string) =>
+    apiClient.post('/subscribers/unsubscribe', { email }),
+
+  count: () =>
+    apiClient.get<{ count: number }>('/subscribers/count'),
+};

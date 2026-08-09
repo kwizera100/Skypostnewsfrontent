@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { articlesApi } from '../api/endpoints';
+import { getImageSrc, onImgError } from '../utils/images';
+import { getLangFromPath, addLangPrefix } from '../i18n';
 import type { Article } from '../types';
 
 export default function BreakingNewsTicker() {
@@ -14,11 +16,12 @@ export default function BreakingNewsTicker() {
 
   if (articles.length === 0) return null;
 
+  const lang = getLangFromPath(window.location.pathname);
   const items = [...articles, ...articles];
 
   return (
     <div className="hidden sm:block bg-white border-b border-gray-200 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 flex items-stretch h-9">
+      <div className="max-w-7xl mx-auto px-4 flex items-stretch h-12">
         <div className="flex-shrink-0 text-white text-xs font-black uppercase px-4 flex items-center whitespace-nowrap tracking-wider"
           style={{ backgroundColor: '#e05c1a' }}>
           🔴 Breaking
@@ -27,10 +30,15 @@ export default function BreakingNewsTicker() {
         <div className="flex-1 overflow-hidden relative ml-3 flex items-center">
           <div className="ticker-animate whitespace-nowrap inline-block">
             {items.map((a, i) => (
-              <span key={i} className="inline-block mr-10">
-                <span className="text-orange-500 mr-1.5 font-bold">◆</span>
-                <Link to={`/article/${a.slug}`}
-                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium">
+              <span key={i} className="inline-block mr-10 align-middle">
+                <img
+                  src={getImageSrc(a.thumbnailUrl || a.imageUrl)}
+                  alt={a.title}
+                  onError={onImgError}
+                  className="inline-block w-8 h-8 object-cover rounded mr-2 align-middle flex-shrink-0"
+                />
+                <Link to={addLangPrefix(`/article/${a.slug}`, lang)}
+                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium align-middle">
                   {a.title}
                 </Link>
               </span>
