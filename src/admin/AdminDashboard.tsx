@@ -6,6 +6,13 @@ import { useAdminAuth } from './AdminAuth';
 import { settingsApi } from '../api/endpoints';
 
 interface Stats { articles: number; published: number; categories: number; users: number; }
+interface ViewStats {
+  today: number;
+  yesterday: number;
+  thisMonth: number;
+  lifetime: number;
+  topArticles: { id: number; title: string; slug: string; views: number }[];
+}
 
 function MaintenanceCard() {
   const [enabled, setEnabled] = useState(false);
@@ -125,6 +132,7 @@ function StatCard({ label, value, icon, color }: { label: string; value: number 
 export default function AdminDashboard() {
   const { token } = useAdminAuth();
   const [stats, setStats] = useState<Stats | null>(null);
+  const [viewStats, setViewStats] = useState<ViewStats | null>(null);
   const [recentArticles, setRecentArticles] = useState<any[]>([]);
 
   useEffect(() => {
@@ -132,7 +140,8 @@ export default function AdminDashboard() {
     Promise.all([
       axios.get('/api/articles?pageSize=5', { headers }),
       axios.get('/api/stats', { headers }).catch(() => ({ data: null })),
-    ]).then(([arts, statsRes]) => {
+      axios.get('/api/stats/views', { headers }).catch(() => ({ data: null })),
+    ]).then(([arts, statsRes, viewsRes]) => {
       const artData = arts.data.data || arts.data;
       const s = statsRes.data;
       if (s) {
@@ -142,6 +151,9 @@ export default function AdminDashboard() {
           categories: s.categories,
           users: s.users,
         });
+      }
+      if (viewsRes.data) {
+        setViewStats(viewsRes.data as ViewStats);
       }
       setRecentArticles(artData.slice(0, 5));
     }).catch(() => {});
@@ -161,6 +173,36 @@ export default function AdminDashboard() {
         <StatCard label="Categories" value={stats?.categories ?? '—'} icon="🏷️" color="#1D4ED8" />
         <StatCard label="Users" value={stats?.users ?? '—'} icon="👥" color="#7C3AED" />
       </div>
+
+      {/* View Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Views Today" value={viewStats?.today ?? '—'} icon="👁️" color="#0EA5E9" />
+        <StatCard label="Views Yesterday" value={viewStats?.yesterday ?? '—'} icon="📅" color="#6366F1" />
+        <StatCard label="Views This Month" value={viewStats?.thisMonth ?? '—'} icon="📆" color="#8B5CF6" />
+        <StatCard label="Views Lifetime" value={viewStats?.lifetime ?? '—'} icon="📊" color="#EC4899" />
+      </div>
+
+      {/* Top Articles by Views */}
+      {viewStats?.topArticles && viewStats.topArticles.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="font-bold text-gray-900 text-sm">Top Articles by Views</h2>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {viewStats.topArticles.map((a, i) => (
+              <div key={a.id} className="px-5 py-3 flex items-center justify-between gap-3 hover:bg-gray-50">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-xs font-black text-gray-400 flex-shrink-0">#{i + 1}</span>
+                  <p className="text-sm font-medium text-gray-800 truncate">{a.title}</p>
+                </div>
+                <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-full flex-shrink-0">
+                  {a.views} views
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Maintenance mode */}
       <MaintenanceCard />
