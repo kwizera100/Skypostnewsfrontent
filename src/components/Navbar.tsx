@@ -1,30 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, Menu, X, Mail } from 'lucide-react';
 import { getLangFromPath, stripLangPrefix, addLangPrefix } from '../i18n';
-
-// Fixed English navigation matching the Sky Post News design.
-const NAV_ITEMS: { label: string; to: string }[] = [
-  { label: 'Home', to: '/' },
-  { label: 'Entertainment', to: '/category/entertainment' },
-  { label: 'Education', to: '/category/education' },
-  { label: 'Politics', to: '/category/politics' },
-  { label: 'Health', to: '/category/health' },
-  { label: 'Sports', to: '/category/sports' },
-  { label: 'Listen', to: '/category/listen' },
-  { label: 'Markets', to: '/category/markets' },
-  { label: 'Opinion', to: '/category/opinion' },
-  { label: 'About Us', to: '/about' },
-];
+import { categoriesApi } from '../api/endpoints';
+import type { Category } from '../types';
 
 export default function Navbar() {
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const currentLang = getLangFromPath(pathname);
   const barePath = stripLangPrefix(pathname);
 
-  const navItems = NAV_ITEMS.map(item => ({
+  useEffect(() => {
+    categoriesApi.getAll()
+      .then(res => setCategories(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setCategories([]));
+  }, [currentLang]);
+
+  // Build nav items: Home + language-specific categories + About
+  const navItems = [
+    { label: 'Home', to: '/' },
+    ...categories.map(c => ({ label: c.name, to: `/category/${c.slug}` })),
+    { label: 'About Us', to: '/about' },
+  ].map(item => ({
     ...item,
     to: addLangPrefix(item.to, currentLang),
   }));
@@ -39,13 +39,13 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Desktop */}
         <div className="hidden md:flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center flex-wrap">
             {navItems.map(({ label, to }) => (
               <Link
                 key={to}
                 to={to}
                 className={`
-                  relative px-4 py-3.5 text-sm font-semibold tracking-wide transition-colors
+                  relative px-3 py-3.5 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap
                   ${isActive(to)
                     ? 'text-sky-600'
                     : 'text-gray-700 hover:text-sky-600'
@@ -60,7 +60,7 @@ export default function Navbar() {
             ))}
           </div>
           <a href="/admin"
-            className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-sky-500 transition-colors py-3.5 px-2">
+            className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-sky-500 transition-colors py-3.5 px-2 flex-shrink-0">
             Admin <ChevronDown size={12} />
           </a>
         </div>

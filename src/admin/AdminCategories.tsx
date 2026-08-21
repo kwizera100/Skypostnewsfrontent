@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { categoriesApi } from '../api/endpoints';
+import axios from 'axios';
+import { useAdminAuth } from './AdminAuth';
 import type { Category } from '../types';
 import toast from 'react-hot-toast';
 
@@ -17,21 +18,28 @@ const PRESET_COLORS = [
   '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1', '#f59e0b', '#10b981',
 ];
 
+type LangFilter = 'all' | 'en' | 'fr' | 'rw';
+
 export default function AdminCategories() {
+  const { token } = useAdminAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState('#0ea5e9');
+  const [language, setLanguage] = useState<'en' | 'fr' | 'rw'>('en');
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [langFilter, setLangFilter] = useState<LangFilter>('all');
 
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const res = await categoriesApi.getAll();
-      setCategories(res.data);
+      const res = await axios.get('/api/categories/all', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCategories(res.data || []);
     } catch {
       toast.error('Failed to load categories');
     } finally {
@@ -41,7 +49,7 @@ export default function AdminCategories() {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+  }, [token]);
 
   const handleNameChange = (val: string) => {
     setName(val);
@@ -53,15 +61,17 @@ export default function AdminCategories() {
     setSlug('');
     setDescription('');
     setColor('#0ea5e9');
+    setLanguage('en');
     setEditingId(null);
   };
 
-  const startEdit = (cat: Category) => {
+  const startEdit = (cat: any) => {
     setEditingId(cat.id);
     setName(cat.name);
     setSlug(cat.slug);
     setDescription(cat.description || '');
     setColor(cat.color);
+    setLanguage(cat.language || 'en');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,12 +82,22 @@ export default function AdminCategories() {
     }
     setSaving(true);
     try {
-      const payload = { name: name.trim(), slug: slug.trim(), description: description.trim() || undefined, color };
+      const payload = {
+        name: name.trim(),
+        slug: slug.trim(),
+        description: description.trim() || undefined,
+        color,
+        language,
+      };
       if (editingId) {
-        await categoriesApi.update(editingId, payload);
+        await axios.put(`/api/categories/${editingId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         toast.success('Category updated');
       } else {
-        await categoriesApi.create(payload);
+        await axios.post('/api/categories', payload, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         toast.success('Category created');
       }
       resetForm();
@@ -93,7 +113,9 @@ export default function AdminCategories() {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Delete this category? Articles must be reassigned first.')) return;
     try {
-      await categoriesApi.delete(id);
+      await axios.delete(`/api/categories/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success('Category deleted');
       await fetchCategories();
     } catch (err: any) {
@@ -101,6 +123,10 @@ export default function AdminCategories() {
       toast.error(msg);
     }
   };
+
+  const filteredCategories = langFilter === 'all'
+    ? categories
+    : categories.filter(c => (c as any).language === langFilter);
 
   return (
     <div className="space-y-6">
@@ -130,6 +156,18 @@ export default function AdminCategories() {
               placeholder="e.g. technology"
             />
           </div>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-500 mb-1">Language</label>
+          <select
+            value={language}
+            onChange={e => setLanguage(e.target.value as 'en' | 'fr' | 'rw')}
+            className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          >
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="rw">Kinyarwanda</option>
+          </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
@@ -183,6 +221,23 @@ export default function AdminCategories() {
         </div>
       </form>
 
+      {/* Language filter */}
+      <div className="flex gap-2">
+        {(['all', 'en', 'fr', 'rw'] as LangFilter[]).map(l => (
+          <button
+            key={l}
+            onClick={() => setLangFilter(l)}
+            className={`px-3 py-1.5 rounded text-xs font-semibold transition-colors ${
+              langFilter === l
+                ? 'bg-sky-600 text-white'
+                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            {l === 'all' ? 'All' : l === 'en' ? 'English' : l === 'fr' ? 'Français' : 'Kinyarwanda'}
+          </button>
+        ))}
+      </div>
+
       {/* List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <table className="min-w-full text-sm">
@@ -190,6 +245,7 @@ export default function AdminCategories() {
             <tr>
               <th className="px-4 py-3 text-left font-semibold">Name</th>
               <th className="px-4 py-3 text-left font-semibold">Slug</th>
+              <th className="px-4 py-3 text-left font-semibold">Lang</th>
               <th className="px-4 py-3 text-left font-semibold">Color</th>
               <th className="px-4 py-3 text-left font-semibold">Articles</th>
               <th className="px-4 py-3 text-right font-semibold">Actions</th>
@@ -198,17 +254,26 @@ export default function AdminCategories() {
           <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-400">Loading…</td>
+                <td colSpan={6} className="px-4 py-6 text-center text-gray-400">Loading…</td>
               </tr>
-            ) : categories.length === 0 ? (
+            ) : filteredCategories.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-gray-400">No categories found</td>
+                <td colSpan={6} className="px-4 py-6 text-center text-gray-400">No categories found</td>
               </tr>
             ) : (
-              categories.map((cat) => (
+              filteredCategories.map((cat: any) => (
                 <tr key={cat.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-800">{cat.name}</td>
                   <td className="px-4 py-3 text-gray-500">{cat.slug}</td>
+                  <td className="px-4 py-3">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                      cat.language === 'fr' ? 'bg-blue-100 text-blue-700' :
+                      cat.language === 'rw' ? 'bg-green-100 text-green-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {cat.language === 'fr' ? 'FR' : cat.language === 'rw' ? 'RW' : 'EN'}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <span className="inline-block w-4 h-4 rounded-full align-middle mr-1 border border-gray-200" style={{ backgroundColor: cat.color }} />
                     <span className="text-gray-500 text-xs">{cat.color}</span>
