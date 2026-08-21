@@ -465,6 +465,7 @@ export default function AdminArticleEditor() {
   const [excerpt, setExcerpt]       = useState('');
   const [categoryId, setCategoryId] = useState<number | ''>('');
   const [published, setPublished]   = useState(false);
+  const [language, setLanguage]     = useState<'en' | 'fr' | 'rw'>('en');
   const [thumbUrl, setThumbUrl]     = useState('');
   const [readTime, setReadTime]     = useState(1);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -506,6 +507,7 @@ export default function AdminArticleEditor() {
         setExcerpt(a.excerpt || '');
         setCategoryId(a.category?.id || '');
         setPublished(a.published ?? false);
+        setLanguage(a.language || 'en');
         setThumbUrl(a.thumbnailUrl || a.imageUrl || '');
         setThumbPreview(a.thumbnailUrl || a.imageUrl || '');
         setReadTime(a.readTime || 1);
@@ -589,6 +591,7 @@ export default function AdminArticleEditor() {
       content: editor.getHTML(),
       categoryId: Number(categoryId),
       published,
+      language,
       readTime,
       thumbnailUrl: thumbUrl || null,
       imageUrl: thumbUrl || null,
@@ -748,10 +751,19 @@ export default function AdminArticleEditor() {
                   {published ? '✅ Published' : '🟡 Draft'}
                 </span>
               </label>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Language</label>
+                <select value={language} onChange={e => setLanguage(e.target.value as 'en' | 'fr' | 'rw')}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                  <option value="en">English</option>
+                  <option value="fr">Français</option>
+                  <option value="rw">Kinyarwanda</option>
+                </select>
+              </div>
               <button type="submit" disabled={saving}
                 className="w-full py-2.5 rounded-xl font-bold text-sm text-white transition-opacity disabled:opacity-60 shadow-lg shadow-orange-500/25"
                 style={{ backgroundColor: '#e05c1a' }}>
-                {saving ? 'Saving…' : isEdit ? 'Update Article' : 'Publish Article'}
+                {saving ? 'Saving…' : isEdit ? 'Update Article' : (published ? 'Publish Article' : 'Save Draft')}
               </button>
             </div>
 

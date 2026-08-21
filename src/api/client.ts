@@ -5,7 +5,9 @@ import { getLangFromPath } from '../i18n';
 // apiClient and as the global axios default, so admin pages that call the
 // global `axios` with absolute `/api/...` paths resolve to the API server
 // instead of the SPA host (which returns index.html on Vercel).
-export const API_ORIGIN = import.meta.env.DEV ? 'http://localhost:3000' : '';
+export const API_ORIGIN = import.meta.env.DEV
+  ? 'http://localhost:3000'
+  : (import.meta.env.VITE_API_URL || 'https://api.skypostnews.com');
 
 // Make the GLOBAL default axios instance target the API server too.
 axios.defaults.baseURL = API_ORIGIN;

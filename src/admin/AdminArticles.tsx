@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAdminAuth } from './AdminAuth';
 
+type StatusFilter = 'all' | 'draft' | 'published';
+type LangFilter = 'all' | 'en' | 'fr' | 'rw';
+
 export default function AdminArticles() {
   const { token } = useAdminAuth();
   const [articles, setArticles] = useState<any[]>([]);
@@ -10,12 +13,17 @@ export default function AdminArticles() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [deleting, setDeleting] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [langFilter, setLangFilter] = useState<LangFilter>('all');
 
   const PAGE_SIZE = 12;
 
   function fetchArticles(p = 1) {
     setLoading(true);
-    axios.get(`/api/articles?page=${p}&pageSize=${PAGE_SIZE}`, {
+    const params = new URLSearchParams({ page: String(p), pageSize: String(PAGE_SIZE) });
+    if (statusFilter !== 'all') params.set('status', statusFilter);
+    if (langFilter !== 'all') params.set('lang', langFilter);
+    axios.get(`/api/articles/admin/all?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
     }).then(r => {
       setArticles(r.data.data || r.data);
@@ -23,7 +31,7 @@ export default function AdminArticles() {
     }).catch(() => {}).finally(() => setLoading(false));
   }
 
-  useEffect(() => { fetchArticles(page); }, [page]);
+  useEffect(() => { fetchArticles(page); }, [page, statusFilter, langFilter]);
 
   async function handleDelete(id: number) {
     if (!confirm('Delete this article?')) return;
@@ -53,6 +61,23 @@ export default function AdminArticles() {
         </Link>
       </div>
 
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
+        <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value as StatusFilter); setPage(1); }}
+          className="border border-gray-200 rounded px-3 py-1.5 text-sm font-medium text-gray-700 bg-white">
+          <option value="all">All Status</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+        <select value={langFilter} onChange={e => { setLangFilter(e.target.value as LangFilter); setPage(1); }}
+          className="border border-gray-200 rounded px-3 py-1.5 text-sm font-medium text-gray-700 bg-white">
+          <option value="all">All Languages</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="rw">Kinyarwanda</option>
+        </select>
+      </div>
+
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-400 animate-pulse">Loading articles…</div>
@@ -64,6 +89,8 @@ export default function AdminArticles() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide">Title</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide hidden md:table-cell">Category</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide hidden md:table-cell">Lang</th>
+                <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide hidden md:table-cell">Views</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide hidden md:table-cell">Date</th>
                 <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wide">Status</th>
                 <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wide">Actions</th>
@@ -80,6 +107,18 @@ export default function AdminArticles() {
                     <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">
                       {a.category?.name}
                     </span>
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                      a.language === 'fr' ? 'bg-blue-100 text-blue-700' :
+                      a.language === 'rw' ? 'bg-green-100 text-green-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {a.language === 'fr' ? 'FR' : a.language === 'rw' ? 'RW' : 'EN'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-500">
+                    {a.views || 0}
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-xs text-gray-500">
                     {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : '—'}
