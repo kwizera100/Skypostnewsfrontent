@@ -108,6 +108,13 @@ export default function Header() {
     return () => clearInterval(t);
   }, []);
 
+  // Listen for subscribe requests from Navbar (mobile)
+  useEffect(() => {
+    const handler = () => setSubOpen(true);
+    window.addEventListener('open-subscribe', handler);
+    return () => window.removeEventListener('open-subscribe', handler);
+  }, []);
+
   useEffect(() => {
     adsApi.getAll()
       .then(res => setAds(res.data || []))

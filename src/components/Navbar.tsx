@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronDown, Menu, X, Globe } from 'lucide-react';
+import { ChevronDown, Menu, X, Mail } from 'lucide-react';
 import { getLangFromPath, stripLangPrefix, addLangPrefix, type Language } from '../i18n';
 
 // Fixed English navigation matching the Sky Post News design.
@@ -90,32 +90,14 @@ export default function Navbar() {
               Browse Categories
               <ChevronDown size={16} className={`transition-transform ${mobileOpen ? 'rotate-180' : ''}`} />
             </button>
-            {/* Mobile language switcher */}
-            <div className="relative">
-              <button
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-600 hover:text-sky-500 transition-colors px-2 py-1"
-              >
-                <Globe size={14} />
-                {currentLang.toUpperCase()}
-                <ChevronDown size={12} />
-              </button>
-              {langOpen && (
-                <div className="absolute right-0 top-full bg-white border border-gray-200 shadow-lg rounded-md py-1 min-w-[140px] z-50">
-                  {LANGS.map(l => (
-                    <button
-                      key={l.code}
-                      onClick={() => { switchLang(l.code); setMobileOpen(false); }}
-                      className={`block w-full text-left px-4 py-2 text-sm font-semibold transition-colors ${
-                        currentLang === l.code ? 'text-sky-600 bg-sky-50' : 'text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {l.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Mobile subscribe button */}
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-subscribe'))}
+              className="flex items-center gap-1 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full transition-colors"
+            >
+              <Mail size={12} />
+              Subscribe
+            </button>
           </div>
 
           {mobileOpen && (
