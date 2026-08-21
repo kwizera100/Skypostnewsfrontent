@@ -133,7 +133,7 @@ export default function Header() {
     return {
       id: 0,
       position: pos,
-      imageUrl: def?.imageUrl || '/logo-rect.jpg',
+      imageUrl: def?.imageUrl || '',
       linkUrl: def?.linkUrl || null,
       altText: def?.altText || null,
       width: 100,
