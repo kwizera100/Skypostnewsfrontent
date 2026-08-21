@@ -212,13 +212,7 @@ export default function Header() {
               href={ad.linkUrl || '#'}
               target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
               rel="noopener noreferrer"
-              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
-                ad.position === 'right'
-                  ? 'hidden sm:flex items-center justify-center'
-                  : ad.position === 'center'
-                    ? 'block'
-                    : 'hidden sm:block'
-              }`}
+              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow flex items-center justify-center`}
               style={{ minHeight: 80 }}
             >
               {ad.position === 'right' && (!ad.imageUrl || ad.imageUrl.includes('ad-right')) ? (
@@ -227,14 +221,20 @@ export default function Header() {
                   <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
                   <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
                 </div>
-              ) : (
+              ) : ad.imageUrl ? (
                 <img
                   src={resolveAdImage(ad.imageUrl)}
                   alt={ad.altText || 'Advertisement'}
                   className="w-full h-full object-contain"
                   style={{ maxHeight: 90 }}
-                  onError={e => { e.currentTarget.style.display = 'none'; }}
+                  onError={e => { e.currentTarget.parentElement!.innerHTML = '<div class="text-center py-3 px-4"><p class="text-sm font-bold text-gray-700">Advertise with us</p><p class="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p><p class="text-xs text-gray-500 mt-1">0782 768 957</p></div>'; }}
                 />
+              ) : (
+                <div className="text-center py-3 px-4">
+                  <p className="text-sm font-bold text-gray-700">Advertise with us</p>
+                  <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
+                  <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
+                </div>
               )}
             </a>
           ))}
