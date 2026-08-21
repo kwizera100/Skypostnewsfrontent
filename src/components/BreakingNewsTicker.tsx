@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { articlesApi } from '../api/endpoints';
 import { getImageSrc, onImgError } from '../utils/images';
 import { getLangFromPath, addLangPrefix } from '../i18n';
 import type { Article } from '../types';
 
 export default function BreakingNewsTicker() {
+  const { pathname } = useLocation();
   const [articles, setArticles] = useState<Article[]>([]);
+
+  const lang = getLangFromPath(pathname);
 
   useEffect(() => {
     articlesApi.getLatest(10)
       .then(res => setArticles(Array.isArray(res.data) ? res.data : []))
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   if (articles.length === 0) return null;
 
-  const lang = getLangFromPath(window.location.pathname);
   const items = [...articles, ...articles];
 
   return (
