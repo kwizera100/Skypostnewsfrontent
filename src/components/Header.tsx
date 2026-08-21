@@ -206,38 +206,62 @@ export default function Header() {
       {/* ── AD BANNER ROW ─────────────────────────────────────── */}
       <div className="bg-white border-b border-gray-200 px-4 py-2">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {displayAds.map(ad => (
-            <a
-              key={ad.position}
-              href={ad.linkUrl || '#'}
-              target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
-              rel="noopener noreferrer"
-              className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow flex items-center justify-center`}
-              style={{ minHeight: 80 }}
-            >
-              {ad.position === 'right' && (!ad.imageUrl || ad.imageUrl.includes('ad-right')) ? (
-                <div className="text-center py-3 px-4">
-                  <p className="text-sm font-bold text-gray-700">Advertise with us</p>
-                  <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
-                  <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
-                </div>
-              ) : ad.imageUrl ? (
-                <img
-                  src={resolveAdImage(ad.imageUrl)}
-                  alt={ad.altText || 'Advertisement'}
-                  className="w-full h-full object-contain"
-                  style={{ maxHeight: 90 }}
-                  onError={e => { e.currentTarget.parentElement!.innerHTML = '<div class="text-center py-3 px-4"><p class="text-sm font-bold text-gray-700">Advertise with us</p><p class="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p><p class="text-xs text-gray-500 mt-1">0782 768 957</p></div>'; }}
-                />
-              ) : (
-                <div className="text-center py-3 px-4">
-                  <p className="text-sm font-bold text-gray-700">Advertise with us</p>
-                  <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
-                  <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
-                </div>
-              )}
-            </a>
-          ))}
+          {displayAds.map(ad => {
+            // On mobile, only show the center ad
+            if (ad.position !== 'center') {
+              return (
+                <a
+                  key={ad.position}
+                  href={ad.linkUrl || '#'}
+                  target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow items-center justify-center"
+                  style={{ minHeight: 80 }}
+                >
+                  {ad.imageUrl ? (
+                    <img
+                      src={resolveAdImage(ad.imageUrl)}
+                      alt={ad.altText || 'Advertisement'}
+                      className="w-full object-contain"
+                      style={{ maxHeight: 90 }}
+                    />
+                  ) : (
+                    <div className="text-center py-3 px-4">
+                      <p className="text-sm font-bold text-gray-700">Advertise with us</p>
+                      <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
+                      <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
+                    </div>
+                  )}
+                </a>
+              );
+            }
+            // Center ad - always visible (mobile + desktop)
+            return (
+              <a
+                key={ad.position}
+                href={ad.linkUrl || '#'}
+                target={ad.linkUrl && ad.linkUrl !== '#' ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                className="flex border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow items-center justify-center"
+                style={{ minHeight: 80 }}
+              >
+                {ad.imageUrl ? (
+                  <img
+                    src={resolveAdImage(ad.imageUrl)}
+                    alt={ad.altText || 'Advertisement'}
+                    className="w-full object-contain"
+                    style={{ maxHeight: 90 }}
+                  />
+                ) : (
+                  <div className="text-center py-3 px-4">
+                    <p className="text-sm font-bold text-gray-700">Advertise with us</p>
+                    <p className="text-xs text-sky-600 font-semibold mt-0.5">&gt;</p>
+                    <p className="text-xs text-gray-500 mt-1">0782 768 957</p>
+                  </div>
+                )}
+              </a>
+            );
+          })}
         </div>
       </div>
 
