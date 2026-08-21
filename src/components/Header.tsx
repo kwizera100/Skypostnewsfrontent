@@ -214,8 +214,10 @@ export default function Header() {
               rel="noopener noreferrer"
               className={`border border-gray-200 rounded overflow-hidden bg-gray-50 hover:shadow-md transition-shadow ${
                 ad.position === 'right'
-                  ? 'flex items-center justify-center'
-                  : 'block'
+                  ? 'hidden sm:flex items-center justify-center'
+                  : ad.position === 'center'
+                    ? 'block'
+                    : 'hidden sm:block'
               }`}
               style={{ minHeight: 80 }}
             >
@@ -231,7 +233,7 @@ export default function Header() {
                   alt={ad.altText || 'Advertisement'}
                   className="w-full h-full object-contain"
                   style={{ maxHeight: 90 }}
-                  onError={e => { e.currentTarget.src = '/logo-rect.jpg'; }}
+                  onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               )}
             </a>
