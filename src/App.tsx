@@ -24,18 +24,21 @@ function AdminApp() {
   const { user, loading } = useAdminAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading…</div>;
   if (!user) return <AdminLogin />;
+  const isAuthor = user.role === 'AUTHOR';
   return (
     <AdminLayout>
       <Routes>
-        <Route index element={<AdminDashboard />} />
+        {/* Authors go straight to their articles, not the dashboard */}
+        <Route index element={isAuthor ? <AdminArticles /> : <AdminDashboard />} />
         <Route path="articles" element={<AdminArticles />} />
         <Route path="articles/new" element={<AdminArticleEditor />} />
         <Route path="articles/:id/edit" element={<AdminArticleEditor />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="categories" element={<AdminCategories />} />
+        {/* Admin/Editor only routes */}
+        {!isAuthor && <Route path="users" element={<AdminUsers />} />}
+        {!isAuthor && <Route path="categories" element={<AdminCategories />} />}
+        {!isAuthor && <Route path="ads" element={<AdminAds />} />}
         <Route path="media" element={<AdminMedia />} />
-        <Route path="ads" element={<AdminAds />} />
-        <Route path="*" element={<Navigate to="/admin" replace />} />
+        <Route path="*" element={<Navigate to={isAuthor ? "/admin/articles" : "/admin"} replace />} />
       </Routes>
     </AdminLayout>
   );

@@ -2,7 +2,7 @@ import { type ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAdminAuth } from './AdminAuth';
 
-const NAV = [
+const ADMIN_NAV = [
   { label: 'Dashboard',  to: '/admin',          icon: '📊' },
   { label: 'Articles',   to: '/admin/articles',  icon: '📰' },
   { label: 'Categories', to: '/admin/categories',icon: '🏷️' },
@@ -12,10 +12,19 @@ const NAV = [
   { label: 'New Article',to: '/admin/articles/new', icon: '✏️' },
 ];
 
+const AUTHOR_NAV = [
+  { label: 'My Articles',   to: '/admin/articles',  icon: '📰' },
+  { label: 'New Article',   to: '/admin/articles/new', icon: '✏️' },
+  { label: 'Media',         to: '/admin/media',     icon: '🖼️' },
+];
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAdminAuth();
   const { pathname } = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const isAuthor = user?.role === 'AUTHOR';
+  const NAV = isAuthor ? AUTHOR_NAV : ADMIN_NAV;
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: '#f3f4f6' }}>
@@ -29,7 +38,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <img src="/logo-bird.png" alt="Sky Post News" className="h-8 w-auto flex-shrink-0" />
           <div>
             <div className="text-white font-black text-sm tracking-tight">SKY POST NEWS</div>
-            <div className="text-gray-500 text-xs">Admin Panel</div>
+            <div className="text-gray-500 text-xs">{isAuthor ? 'Author Panel' : 'Admin Panel'}</div>
           </div>
         </div>
 
@@ -87,7 +96,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
-              Sky Post News Admin
+              {isAuthor ? 'Author Dashboard' : 'Sky Post News Admin'}
             </span>
           </div>
           <Link to="/" className="text-xs text-sky-600 hover:text-sky-700 font-semibold">
