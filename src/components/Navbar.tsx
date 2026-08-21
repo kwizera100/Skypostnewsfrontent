@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, Menu, X, Mail } from 'lucide-react';
-import { getLangFromPath, stripLangPrefix, addLangPrefix, type Language } from '../i18n';
+import { getLangFromPath, stripLangPrefix, addLangPrefix } from '../i18n';
 
 // Fixed English navigation matching the Sky Post News design.
 const NAV_ITEMS: { label: string; to: string }[] = [
@@ -17,17 +17,9 @@ const NAV_ITEMS: { label: string; to: string }[] = [
   { label: 'About Us', to: '/about' },
 ];
 
-const LANGS: { code: Language; label: string }[] = [
-  { code: 'en', label: 'English' },
-  { code: 'fr', label: 'Français' },
-  { code: 'rw', label: 'Kinyarwanda' },
-];
-
 export default function Navbar() {
   const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
 
   const currentLang = getLangFromPath(pathname);
   const barePath = stripLangPrefix(pathname);
@@ -40,11 +32,6 @@ export default function Navbar() {
   const isActive = (to: string) => {
     const bareTo = stripLangPrefix(to);
     return bareTo === '/' ? barePath === '/' : barePath.startsWith(bareTo);
-  };
-
-  const switchLang = (lang: Language) => {
-    setLangOpen(false);
-    navigate(addLangPrefix(barePath, lang));
   };
 
   return (
