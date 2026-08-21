@@ -4,6 +4,7 @@ import { Calendar, Clock, User, ArrowLeft, TrendingUp, Eye } from 'lucide-react'
 import { articlesApi } from '../api/endpoints';
 import type { Article } from '../types';
 import { getImageSrc, onImgError, fixContentImages, injectSponsoredAd } from '../utils/images';
+import { API_ORIGIN } from '../api/client';
 import { useAdminAuth } from '../admin/AdminAuth';
 import { useLanguage, addLangPrefix } from '../i18n';
 import { FacebookIcon, InstagramIcon, TwitterIcon } from '../components/SocialIcons';
@@ -375,6 +376,16 @@ export default function ArticlePage() {
               </Link>
             ))}
           </div>
+        </div>
+
+        {/* Land Plot Houses GIF */}
+        <div className="rounded-2xl overflow-hidden shadow-sm">
+          <img
+            src={`${API_ORIGIN}/uploads/land-plot-houses.gif`}
+            alt="Land Plot Houses"
+            onError={e => { e.currentTarget.style.display = 'none'; }}
+            className="w-full h-auto"
+          />
         </div>
       </aside>
     </div>
