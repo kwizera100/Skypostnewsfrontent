@@ -19,6 +19,7 @@ import AdminUsers from './admin/AdminUsers';
 import AdminMedia from './admin/AdminMedia';
 import AdminAds from './admin/AdminAds';
 import AdminCategories from './admin/AdminCategories';
+import AdminProfile from './admin/AdminProfile';
 
 function AdminApp() {
   const { user, loading } = useAdminAuth();
@@ -38,6 +39,7 @@ function AdminApp() {
         {!isAuthor && <Route path="categories" element={<AdminCategories />} />}
         {!isAuthor && <Route path="ads" element={<AdminAds />} />}
         <Route path="media" element={<AdminMedia />} />
+        <Route path="profile" element={<AdminProfile />} />
         <Route path="*" element={<Navigate to={isAuthor ? "/admin/articles" : "/admin"} replace />} />
       </Routes>
     </AdminLayout>

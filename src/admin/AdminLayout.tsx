@@ -10,12 +10,14 @@ const ADMIN_NAV = [
   { label: 'Media',      to: '/admin/media',     icon: '🖼️' },
   { label: 'Ad Banners', to: '/admin/ads',       icon: '📢' },
   { label: 'New Article',to: '/admin/articles/new', icon: '✏️' },
+  { label: 'My Profile', to: '/admin/profile',   icon: '👤' },
 ];
 
 const AUTHOR_NAV = [
   { label: 'My Articles',   to: '/admin/articles',  icon: '📰' },
   { label: 'New Article',   to: '/admin/articles/new', icon: '✏️' },
   { label: 'Media',         to: '/admin/media',     icon: '🖼️' },
+  { label: 'My Profile',    to: '/admin/profile',   icon: '👤' },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
