@@ -182,14 +182,17 @@ export default async function handler(req: any, res: any) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
   try {
-    const slug = req.query?.slug as string;
+    // Normalise slug: strip trailing slashes, reject anything that isn't a
+    // plain article slug so malformed URLs can't reach the API lookup.
+    let slug = (req.query?.slug as string || '').replace(/\/+$/, '');
+    if (slug && !/^[a-z0-9][a-z0-9-]*$/i.test(slug)) slug = '';
     const lang = (req.query?.lang as string) === 'fr' || (req.query?.lang as string) === 'rw'
       ? (req.query.lang as string)
       : 'en';
 
     let html = await getIndexHtml(req);
 
-    if (!slug || typeof slug !== 'string') {
+    if (!slug) {
       return res.status(200).send(injectMeta(html, DEFAULT_META));
     }
 
