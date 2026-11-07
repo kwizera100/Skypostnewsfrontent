@@ -4,6 +4,11 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "vite",
+  "functions": {
+    "api/og.ts": {
+      "includeFiles": "dist/index.html"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -12,6 +17,18 @@
     {
       "source": "/uploads/:path*",
       "destination": "https://api.skypostnews.com/uploads/:path*"
+    },
+    {
+      "source": "/article/:slug",
+      "destination": "/api/og?slug=:slug"
+    },
+    {
+      "source": "/fr/article/:slug",
+      "destination": "/api/og?slug=:slug&lang=fr"
+    },
+    {
+      "source": "/rw/article/:slug",
+      "destination": "/api/og?slug=:slug&lang=rw"
     },
     {
       "source": "/(.*)",

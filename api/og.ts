@@ -1,4 +1,7 @@
 // @ts-nocheck
+import fs from 'fs';
+import path from 'path';
+
 const API_URL = process.env.VITE_API_URL || process.env.API_URL || 'https://api.skypostnews.com';
 const SITE_URL = process.env.SITE_URL || 'https://www.skypostnews.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo-rect.jpg`;
@@ -13,20 +16,63 @@ function fetchWithTimeout(url: string, ms: number, opts: Record<string, any> = {
   return fetch(url, { ...opts, signal: controller.signal }).finally(() => clearTimeout(timer));
 }
 
-// Base template: crawlers read meta tags, browsers redirect to SPA via meta refresh
-const BASE_TEMPLATE = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="/logo-square.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="refresh" content="0;url=/" />
-    <title>Sky Post News</title>
-  </head>
-  <body>
-    <noscript><p>Loading… <a href="/">Go to Sky Post News</a></p></noscript>
-  </body>
-</html>`;
+// ─── Serve the real built index.html ─────────────────────────────────────────
+// Crawlers read the injected meta tags; browsers get the full SPA and React
+// Router renders the article. This replaces the old stub page that used to
+// meta-refresh every visitor to the homepage.
+
+let cachedHtml: string | null = null;
+
+function readBundledIndex(): string | null {
+  const candidates: string[] = [];
+  try {
+    candidates.push(path.join(process.cwd(), 'dist', 'index.html'));
+    // eslint-disable-next-line no-undef
+    if (typeof __dirname !== 'undefined') {
+      // eslint-disable-next-line no-undef
+      candidates.push(path.join(__dirname, '..', '..', 'dist', 'index.html'));
+      // eslint-disable-next-line no-undef
+      candidates.push(path.join(__dirname, '..', 'dist', 'index.html'));
+    }
+  } catch { /* ignore */ }
+  for (const p of candidates) {
+    try {
+      const html = fs.readFileSync(p, 'utf8');
+      if (html.includes('<div id="root">')) return html;
+    } catch { /* try next */ }
+  }
+  return null;
+}
+
+async function fetchIndexHtml(host: string): Promise<string | null> {
+  // Try the deployment's own host first (correct hashed asset paths for THIS
+  // deployment), then the canonical domain as fallback.
+  for (const base of [`https://${host}`, SITE_URL]) {
+    try {
+      const res = await fetchWithTimeout(`${base}/index.html`, 4000, {
+        headers: { 'User-Agent': 'SkyPostNews-OG/1.0' },
+      });
+      if (res.ok) {
+        const html = await res.text();
+        if (html.includes('<div id="root">')) return html;
+      }
+    } catch { /* try next */ }
+  }
+  return null;
+}
+
+async function getIndexHtml(req: any): Promise<string> {
+  if (cachedHtml) return cachedHtml;
+  const bundled = readBundledIndex();
+  if (bundled) { cachedHtml = bundled; return bundled; }
+  const host = req.headers?.host || 'skypostnewsfrontent.vercel.app';
+  const fetched = await fetchIndexHtml(host);
+  if (fetched) { cachedHtml = fetched; return fetched; }
+  // Last-resort minimal SPA shell — better than a dead page.
+  return '<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Sky Post News - True News Every Day</title></head><body><div id="root"></div></body></html>';
+}
+
+// ─── Meta helpers ─────────────────────────────────────────────────────────────
 
 function escapeHtml(text: string): string {
   return text
@@ -38,17 +84,16 @@ function escapeHtml(text: string): string {
 
 function resolveImageUrl(url: string | null | undefined): string {
   if (!url) return DEFAULT_IMAGE;
-  // Ensure Wayback Machine URLs use im_ form (raw image, not HTML wrapper)
   if (/web\.archive\.org\/web\/\d+/.test(url) && !/web\.archive\.org\/web\/\d+im_/.test(url)) {
     url = url.replace(/^(https?:\/\/web\.archive\.org\/web\/)(\d+)(\/)/, '$1$2im_$3');
   }
   if (url.startsWith('http')) return url;
-  if (url.startsWith('/uploads/')) return `${SITE_URL}${url}`;
+  if (url.startsWith('/uploads/')) return `${API_URL}${url}`;
   if (url.startsWith('/')) return `${SITE_URL}${url}`;
   return `${SITE_URL}/${url}`;
 }
 
-// Strip all existing OG, Twitter, and article meta tags from the HTML
+// Strip all existing OG, Twitter, article and description meta tags
 function stripSocialMeta(html: string): string {
   return html
     .replace(/<meta\s+property="og:[^"]*"\s+content="[^"]*"\s*\/?>/gi, '')
@@ -61,7 +106,6 @@ function stripSocialMeta(html: string): string {
     .replace(/<meta\s+content="[^"]*"\s+name="description"\s*\/?>/gi, '');
 }
 
-// Build all meta tags as a single block
 function buildMetaTags(opts: {
   title: string; desc: string; ogTitle: string; ogDesc: string;
   ogImage: string; ogUrl: string; ogType: string;
@@ -105,45 +149,48 @@ function injectMeta(html: string, opts: {
   twTitle: string; twDesc: string; twImage: string;
   publishedTime?: string; author?: string; section?: string;
 }): string {
-  // Replace <title>
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(opts.title)}</title>`);
-
-  // Strip ALL existing social/description meta tags to avoid duplicates
   html = stripSocialMeta(html);
-
-  // Insert fresh meta tags before </head>
   const metaBlock = buildMetaTags(opts);
-  html = html.replace(/<\/head>/i, `${metaBlock}\n  </head>`);
-
+  if (html.includes('</head>')) {
+    html = html.replace(/<\/head>/i, `${metaBlock}\n  </head>`);
+  } else {
+    html = html.replace(/<head>/i, `<head>\n${metaBlock}`);
+  }
   return html;
 }
 
+const DEFAULT_META = {
+  title: 'Sky Post News - True News Every Day',
+  desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+  ogTitle: 'Sky Post News - True News Every Day',
+  ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+  ogImage: DEFAULT_IMAGE,
+  ogUrl: SITE_URL,
+  ogType: 'website',
+  twTitle: 'Sky Post News - True News Every Day',
+  twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
+  twImage: DEFAULT_IMAGE,
+};
+
+// ─── Handler ─────────────────────────────────────────────────────────────────
+
 export default async function handler(req: any, res: any) {
+  // CDN cache: 5 min browser, 10 min edge — crawlers re-check often enough for
+  // fresh shares while keeping backend API calls minimal.
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+
   try {
     const slug = req.query?.slug as string;
+    const lang = (req.query?.lang as string) === 'fr' || (req.query?.lang as string) === 'rw'
+      ? (req.query.lang as string)
+      : 'en';
 
-    // Cache: 5 min browser, 10 min CDN
-    res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
-
-    // Use base template (crawlers get meta tags, browsers redirect to SPA)
-    let html = BASE_TEMPLATE;
+    let html = await getIndexHtml(req);
 
     if (!slug || typeof slug !== 'string') {
-      // Default meta for non-article routes
-      html = injectMeta(html, {
-        title: 'Sky Post News - True News Every Day',
-        desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-        ogTitle: 'Sky Post News - True News Every Day',
-        ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-        ogImage: DEFAULT_IMAGE,
-        ogUrl: SITE_URL,
-        ogType: 'website',
-        twTitle: 'Sky Post News - True News Every Day',
-        twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-        twImage: DEFAULT_IMAGE,
-      });
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.status(200).send(html);
+      return res.status(200).send(injectMeta(html, DEFAULT_META));
     }
 
     try {
@@ -152,46 +199,20 @@ export default async function handler(req: any, res: any) {
       });
 
       if (!apiRes.ok) {
-        console.error(`OG: API returned ${apiRes.status} for slug "${slug}"`);
-        html = injectMeta(html, {
-          title: 'Sky Post News - True News Every Day',
-          desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          ogTitle: 'Sky Post News - True News Every Day',
-          ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          ogImage: DEFAULT_IMAGE,
-          ogUrl: `${SITE_URL}/article/${slug}`,
-          ogType: 'article',
-          twTitle: 'Sky Post News - True News Every Day',
-          twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          twImage: DEFAULT_IMAGE,
-        });
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.status(200).send(html);
+        const ogUrl = `${SITE_URL}/${lang === 'en' ? '' : lang + '/'}article/${slug}`;
+        return res.status(200).send(injectMeta(html, { ...DEFAULT_META, ogType: 'article', ogUrl }));
       }
 
       const article = await apiRes.json();
 
       if (!article || !article.id) {
-        console.error(`OG: Article not found or invalid for slug "${slug}"`);
-        html = injectMeta(html, {
-          title: 'Sky Post News - True News Every Day',
-          desc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          ogTitle: 'Sky Post News - True News Every Day',
-          ogDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          ogImage: DEFAULT_IMAGE,
-          ogUrl: `${SITE_URL}/article/${slug}`,
-          ogType: 'article',
-          twTitle: 'Sky Post News - True News Every Day',
-          twDesc: 'Your trusted source for breaking news, politics, business, technology, and more from around the world.',
-          twImage: DEFAULT_IMAGE,
-        });
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.status(200).send(html);
+        const ogUrl = `${SITE_URL}/${lang === 'en' ? '' : lang + '/'}article/${slug}`;
+        return res.status(200).send(injectMeta(html, { ...DEFAULT_META, ogType: 'article', ogUrl }));
       }
 
       const title = article.title || 'Sky Post News';
       const description = article.excerpt || 'Read the full article on Sky Post News.';
-      const url = `${SITE_URL}/article/${slug}`;
+      const ogUrl = `${SITE_URL}/${lang === 'en' ? '' : lang + '/'}article/${slug}`;
       const imageUrl = resolveImageUrl(article.imageUrl || article.thumbnailUrl);
       const fullTitle = `${title} | Sky Post News`;
 
@@ -201,7 +222,7 @@ export default async function handler(req: any, res: any) {
         ogTitle: title,
         ogDesc: description,
         ogImage: imageUrl,
-        ogUrl: url,
+        ogUrl,
         ogType: 'article',
         twTitle: title,
         twDesc: description,
@@ -211,16 +232,16 @@ export default async function handler(req: any, res: any) {
         section: article.category?.name,
       });
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.status(200).send(html);
+      return res.status(200).send(html);
     } catch (error) {
       console.error('OG handler inner error:', error);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.status(200).send(html);
+      const ogUrl = `${SITE_URL}/${lang === 'en' ? '' : lang + '/'}article/${slug}`;
+      return res.status(200).send(injectMeta(html, { ...DEFAULT_META, ogType: 'article', ogUrl }));
     }
   } catch (error) {
     console.error('OG handler fatal error:', error);
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.status(200).send(BASE_TEMPLATE);
+    return res.status(200).send(
+      '<!doctype html><html lang="en"><head><meta charset="UTF-8"/><title>Sky Post News</title></head><body><div id="root"></div></body></html>'
+    );
   }
 }
